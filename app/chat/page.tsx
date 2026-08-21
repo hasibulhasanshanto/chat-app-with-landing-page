@@ -17,7 +17,6 @@ import {
   useRemoveGroupMemberMutation,
   usePromoteAdminMutation,
   useRenameGroupMutation,
-  useRealtimeSocketSync,
 } from '@/hooks/queries/useConversationQueries';
 import { Conversation, GroupConversation } from '@/types/chat';
 import { SearchedUser } from '@/types/user';
@@ -71,10 +70,6 @@ export default function ChatPage() {
   const removeMemberMutation = useRemoveGroupMemberMutation();
   const promoteAdminMutation = usePromoteAdminMutation();
   const renameGroupMutation = useRenameGroupMutation();
-
-  // Connect Socket.io real-time updates directly to TanStack Query cache
-  useRealtimeSocketSync(activeConversationId);
-
   const queryClient = useQueryClient();
 
   // Active conversation object
