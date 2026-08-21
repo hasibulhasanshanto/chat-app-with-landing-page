@@ -58,9 +58,15 @@ export default function ChatPage() {
     closeManageGroup,
   } = useChatUIStore();
 
-  // TanStack Query Server State
+  // TanStack Query Server State with Infinite Scroll Pagination
   const { data: conversations = [], isLoading: isLoadingConversations } = useConversationsQuery();
-  const { data: messagesData, isLoading: isLoadingMessages } = useMessagesQuery(activeConversationId);
+  const {
+    data: messagesData,
+    isLoading: isLoadingMessages,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useMessagesQuery(activeConversationId);
   const messages = messagesData?.messages || [];
 
   // Mutations
@@ -220,6 +226,9 @@ export default function ChatPage() {
               messages={messages}
               currentUser={user}
               isLoadingMessages={isLoadingMessages}
+              hasNextPage={Boolean(hasNextPage)}
+              isFetchingNextPage={Boolean(isFetchingNextPage)}
+              fetchNextPage={fetchNextPage}
               onSendMessage={handleSendMessage}
               onToggleDetails={toggleDetails}
               onBackToConversations={() => setMobileView('list')}

@@ -26,15 +26,22 @@ export function MessageComposer({
   const { emitTyping } = useSocket();
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [conversationId]);
-
   const handleStopTyping = useCallback(() => {
     if (conversationId) {
       emitTyping(conversationId, false);
     }
   }, [conversationId, emitTyping]);
+
+  // When conversation / person changes, immediately clear input and stop typing
+  useEffect(() => {
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    handleStopTyping();
+    setText('');
+    setShowEmojis(false);
+    inputRef.current?.focus();
+  }, [conversationId, handleStopTyping]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;

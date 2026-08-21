@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryKeys';
 import {
   getConversationsApi,
@@ -25,10 +25,25 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 export function useConversationsQuery() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const queryClient = useQueryClient();
 
   return useQuery({
     queryKey: queryKeys.conversations.list(),
-    queryFn: getConversationsApi,
+    queryFn: async () => {
+      const freshList = await getConversationsApi();
+      const prevData = queryClient.getQueryData<Conversation[]>(queryKeys.conversations.list()) || [];
+      const unreadMap = new Map<string, number>();
+      prevData.forEach((c) => {
+        if (c.unreadCount) {
+          unreadMap.set(c._id, c.unreadCount);
+        }
+      });
+
+      return freshList.map((c) => ({
+        ...c,
+        unreadCount: unreadMap.get(c._id) ?? c.unreadCount ?? 0,
+      }));
+    },
     enabled: isAuthenticated,
     // Background polling every 3 seconds for guaranteed synchronization across tabs/browsers
     refetchInterval: 3000,
@@ -36,26 +51,57 @@ export function useConversationsQuery() {
   });
 }
 
+/**
+ * Infinite-scroll pagination for conversation messages (fetches older messages on scroll-up)
+ */
 export function useMessagesQuery(conversationId: string | null) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.conversations.messages(conversationId || ''),
-    queryFn: async () => {
-      const res = await getMessagesApi(conversationId!);
-      // Ensure messages are sorted in chronological order (oldest -> newest / top -> bottom)
-      const sorted = [...(res?.messages || [])].sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      return {
-        ...res,
-        messages: sorted,
-      };
+    queryFn: async ({ pageParam }) => {
+      const res = await getMessagesApi(conversationId!, {
+        limit: 25,
+        before: pageParam as string | undefined,
+      });
+      return res || { messages: [], hasMore: false };
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.hasMore || !lastPage?.messages || lastPage.messages.length === 0) {
+        return undefined;
+      }
+      // The API returns messages in newest-first order. The oldest message is the last item.
+      const oldestMessage = lastPage.messages[lastPage.messages.length - 1];
+      return oldestMessage?._id || oldestMessage?.createdAt;
     },
     enabled: isAuthenticated && !!conversationId,
-    // Background polling every 2 seconds for active conversation
-    refetchInterval: 2000,
-    refetchIntervalInBackground: false,
+    // No refetchInterval: real-time updates come via socket; polling would cause scroll jumps during pagination
+    staleTime: 30_000,
+    select: (data) => {
+      // Flatten all pages and deduplicate messages by ID
+      const allMessagesMap = new Map<string, Message>();
+      data.pages.forEach((page) => {
+        (page?.messages || []).forEach((m) => {
+          if (m && m._id) {
+            allMessagesMap.set(m._id, m);
+          }
+        });
+      });
+
+      const flattened = Array.from(allMessagesMap.values());
+      // Sort chronologically: oldest at index 0 (top) -> newest at index N-1 (bottom)
+      const sorted = flattened.sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+      const hasMore = data.pages[data.pages.length - 1]?.hasMore ?? false;
+
+      return {
+        messages: sorted,
+        hasMore,
+      };
+    },
   });
 }
 
@@ -68,10 +114,9 @@ export function useSendMessageMutation() {
       return sendMessageApi(conversationId, text);
     },
     onMutate: async ({ conversationId, text }) => {
-      // Cancel outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: queryKeys.conversations.messages(conversationId) });
 
-      const prevMessages = queryClient.getQueryData<MessagesResponse>(
+      const prevData = queryClient.getQueryData<any>(
         queryKeys.conversations.messages(conversationId)
       );
 
@@ -85,26 +130,37 @@ export function useSendMessageMutation() {
         isOptimistic: true,
       };
 
-      // Optimistically append to the bottom of messages query cache
-      if (prevMessages) {
-        queryClient.setQueryData<MessagesResponse>(
-          queryKeys.conversations.messages(conversationId),
-          {
-            ...prevMessages,
-            messages: [...prevMessages.messages, optimisticMessage],
+      // Optimistically inject into infinite query or flat query cache
+      queryClient.setQueryData<any>(
+        queryKeys.conversations.messages(conversationId),
+        (old: any) => {
+          if (!old) {
+            return {
+              pages: [{ messages: [optimisticMessage], hasMore: false }],
+              pageParams: [undefined],
+            };
           }
-        );
-      } else {
-        queryClient.setQueryData<MessagesResponse>(
-          queryKeys.conversations.messages(conversationId),
-          {
-            messages: [optimisticMessage],
-            hasMore: false,
-          }
-        );
-      }
 
-      // Optimistically update conversation list lastMessage and reset unread
+          if (old.pages && Array.isArray(old.pages)) {
+            const nextPages = [...old.pages];
+            nextPages[0] = {
+              ...nextPages[0],
+              messages: [optimisticMessage, ...(nextPages[0]?.messages || [])],
+            };
+            return {
+              ...old,
+              pages: nextPages,
+            };
+          }
+
+          return {
+            ...old,
+            messages: [...(old.messages || []), optimisticMessage],
+          };
+        }
+      );
+
+      // Optimistically update conversation list lastMessage
       queryClient.setQueryData<Conversation[]>(
         queryKeys.conversations.list(),
         (old = []) => {
@@ -126,31 +182,56 @@ export function useSendMessageMutation() {
         }
       );
 
-      return { prevMessages, tempId, conversationId };
+      return { prevData, tempId, conversationId };
     },
     onError: (err, variables, context) => {
-      if (context?.prevMessages) {
+      if (context?.prevData) {
         queryClient.setQueryData(
           queryKeys.conversations.messages(context.conversationId),
-          context.prevMessages
+          context.prevData
         );
       }
     },
     onSuccess: (sentMessage, variables, context) => {
-      // Swap optimistic message with real message from server
-      queryClient.setQueryData<MessagesResponse>(
+      // Swap optimistic message with real MongoDB message
+      queryClient.setQueryData<any>(
         queryKeys.conversations.messages(variables.conversationId),
-        (old) => {
-          if (!old) return { messages: [sentMessage], hasMore: false };
-          return {
-            ...old,
-            messages: old.messages.map((m) =>
-              m._id === context?.tempId ? sentMessage : m
-            ),
-          };
+        (old: any) => {
+          if (!old) {
+            return {
+              pages: [{ messages: [sentMessage], hasMore: false }],
+              pageParams: [undefined],
+            };
+          }
+
+          if (old.pages && Array.isArray(old.pages)) {
+            const nextPages = old.pages.map((page: any) => {
+              if (!page?.messages) return page;
+              return {
+                ...page,
+                messages: page.messages.map((m: any) =>
+                  m._id === context?.tempId ? sentMessage : m
+                ),
+              };
+            });
+            return {
+              ...old,
+              pages: nextPages,
+            };
+          }
+
+          if (old.messages && Array.isArray(old.messages)) {
+            return {
+              ...old,
+              messages: old.messages.map((m: any) =>
+                m._id === context?.tempId ? sentMessage : m
+              ),
+            };
+          }
+
+          return old;
         }
       );
-      // Invalidate to ensure conversation list metadata is up to date
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations.list() });
     },
   });

@@ -7,7 +7,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatUIStore } from '@/store/useChatUIStore';
 import { getSocket } from '@/lib/socket';
-import { Message, GroupConversation, Conversation, MessagesResponse } from '@/types/chat';
+import { Message, GroupConversation, Conversation } from '@/types/chat';
 
 export interface TypingUser {
   userId: string;
@@ -50,7 +50,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const currentUser = useAuthStore((state) => state.user);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<Record<string, TypingUser[]>>({});
@@ -58,58 +57,17 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const typingTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
 
-  // Initialize cross-tab BroadcastChannel & LocalStorage listeners
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    let bc: BroadcastChannel | null = null;
-    try {
-      if ('BroadcastChannel' in window) {
-        bc = new BroadcastChannel('chatflow_realtime_channel');
-        broadcastChannelRef.current = bc;
-
-        bc.onmessage = (event) => {
-          const data = event.data;
-          if (data && data.type === 'typing') {
-            handleTypingEvent(data);
-          }
-        };
-      }
-    } catch (e) {
-      console.warn('BroadcastChannel not supported:', e);
-    }
-
-    // Storage event listener for cross-window sync
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'chatflow_typing_sync' && e.newValue) {
-        try {
-          const data = JSON.parse(e.newValue);
-          handleTypingEvent(data);
-        } catch (err) {
-          // ignore
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-
-    return () => {
-      if (bc) {
-        bc.close();
-      }
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, []);
-
+  // Helper to handle typing event strictly attached to conversationId
   const handleTypingEvent = useCallback((data: any) => {
     const convId = extractConversationId(data);
     const userId = extractSenderId(data);
     const myId = useAuthStore.getState().user?._id;
+
     if (!convId || !userId || (myId && userId === myId)) return;
 
     const userName = data.name || data.userName || data.user?.name || 'Someone';
     const isTyping = data.isTyping !== false;
-    const key = `${convId}-${userId}`;
+    const key = `${convId}:${userId}`;
 
     if (typingTimeoutsRef.current[key]) {
       clearTimeout(typingTimeoutsRef.current[key]);
@@ -147,6 +105,101 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // 1. Real-time Server-Sent Events (SSE) stream listener
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let eventSource: EventSource | null = null;
+
+    try {
+      eventSource = new EventSource('/api/typing/stream');
+      eventSource.onmessage = (event) => {
+        if (!event.data || event.data.startsWith(':')) return;
+        try {
+          const data = JSON.parse(event.data);
+          handleTypingEvent(data);
+        } catch (e) {
+          // ignore
+        }
+      };
+    } catch (e) {
+      console.warn('SSE not initialized:', e);
+    }
+
+    // Polling fallback strictly querying active conversation ID
+    const pollInterval = setInterval(async () => {
+      try {
+        const activeId = useChatUIStore.getState().activeConversationId;
+        const myId = useAuthStore.getState().user?._id;
+        if (!activeId) return;
+
+        const res = await fetch(`/api/typing?conversationId=${encodeURIComponent(activeId)}`);
+        if (res.ok) {
+          const { typingByConversation } = await res.json();
+          const targetTypers = (typingByConversation?.[activeId] || []).filter(
+            (t: any) => t.userId !== myId
+          );
+          setTypingUsers((prev) => ({
+            ...prev,
+            [activeId]: targetTypers,
+          }));
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 2000);
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+      clearInterval(pollInterval);
+    };
+  }, [handleTypingEvent]);
+
+  // 2. BroadcastChannel & LocalStorage listeners for cross-tab sync
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let bc: BroadcastChannel | null = null;
+    try {
+      if ('BroadcastChannel' in window) {
+        bc = new BroadcastChannel('chatflow_realtime_channel');
+        broadcastChannelRef.current = bc;
+
+        bc.onmessage = (event) => {
+          const data = event.data;
+          if (data && data.type === 'typing') {
+            handleTypingEvent(data);
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('BroadcastChannel not supported:', e);
+    }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'chatflow_typing_sync' && e.newValue) {
+        try {
+          const data = JSON.parse(e.newValue);
+          handleTypingEvent(data);
+        } catch (err) {
+          // ignore
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      if (bc) {
+        bc.close();
+      }
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [handleTypingEvent]);
+
+  // 3. Socket.io Connection & Event Handling
   useEffect(() => {
     if (!token && !isAuthenticated) {
       if (socket) {
@@ -177,13 +230,13 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       setIsConnected(false);
     };
 
-    // Global real-time message receiver
+    // Global message handler
     const handleGlobalNewMessage = (incomingMessage: any) => {
       const convId = extractConversationId(incomingMessage);
       const senderId = extractSenderId(incomingMessage);
       if (!convId) return;
 
-      // Automatically clear typing indicator for this user when message arrives
+      // Clear typing indicator for this conversation when message arrives
       setTypingUsers((prev) => {
         const list = prev[convId] || [];
         const nextList = list.filter((u) => u.userId !== senderId);
@@ -191,36 +244,80 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         return { ...prev, [convId]: nextList };
       });
 
+      // Clear API typing state too
+      fetch('/api/typing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: convId, userId: senderId, isTyping: false }),
+      }).catch(() => {});
+
       const activeId = useChatUIStore.getState().activeConversationId;
       const myId = useAuthStore.getState().user?._id;
       const isFromMe = Boolean(myId && senderId === myId);
       const isCurrentlyOpen = activeId === convId;
 
-      // 1. Immediately inject message into cache
-      queryClient.setQueryData<MessagesResponse>(
+      // 1. Update Messages Cache (supports both InfiniteData & flat formats safely)
+      queryClient.setQueryData<any>(
         queryKeys.conversations.messages(convId),
-        (old) => {
+        (old: any) => {
           if (!old) {
-            return { messages: [incomingMessage], hasMore: false };
-          }
-          const exists = old.messages.some((m) => m._id === incomingMessage._id);
-          if (exists) return old;
-
-          // Replace optimistic placeholder
-          const optIdx = old.messages.findIndex(
-            (m) => m.isOptimistic && m.text === incomingMessage.text
-          );
-          if (optIdx !== -1) {
-            const next = [...old.messages];
-            next[optIdx] = incomingMessage;
-            return { ...old, messages: next };
+            return {
+              pages: [{ messages: [incomingMessage], hasMore: false }],
+              pageParams: [undefined],
+            };
           }
 
-          return { ...old, messages: [...old.messages, incomingMessage] };
+          // Handle InfiniteData structure
+          if (old.pages && Array.isArray(old.pages)) {
+            const allMessages = old.pages.flatMap((p: any) => p?.messages || []);
+            if (allMessages.some((m: any) => m._id === incomingMessage._id)) {
+              return old;
+            }
+
+            let replaced = false;
+            const nextPages = old.pages.map((page: any) => {
+              if (!page?.messages) return page;
+              const optIdx = page.messages.findIndex(
+                (m: any) => m.isOptimistic && m.text === incomingMessage.text
+              );
+              if (optIdx !== -1) {
+                replaced = true;
+                const nextMsgs = [...page.messages];
+                nextMsgs[optIdx] = incomingMessage;
+                return { ...page, messages: nextMsgs };
+              }
+              return page;
+            });
+
+            if (!replaced && nextPages.length > 0) {
+              nextPages[0] = {
+                ...nextPages[0],
+                messages: [incomingMessage, ...(nextPages[0]?.messages || [])],
+              };
+            }
+
+            return { ...old, pages: nextPages };
+          }
+
+          // Handle Flat structure
+          if (old.messages && Array.isArray(old.messages)) {
+            if (old.messages.some((m: any) => m._id === incomingMessage._id)) return old;
+            const optIdx = old.messages.findIndex(
+              (m: any) => m.isOptimistic && m.text === incomingMessage.text
+            );
+            if (optIdx !== -1) {
+              const next = [...old.messages];
+              next[optIdx] = incomingMessage;
+              return { ...old, messages: next };
+            }
+            return { ...old, messages: [...old.messages, incomingMessage] };
+          }
+
+          return old;
         }
       );
 
-      // 2. Immediately update Inbox preview and bump to top
+      // 2. Update Conversation List (lastMessage & unread count)
       queryClient.setQueryData<Conversation[]>(
         queryKeys.conversations.list(),
         (old = []) => {
@@ -232,6 +329,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
           const existingConv = old[index];
           const currentUnread = existingConv.unreadCount || 0;
+          // If message is from someone else and this chat is not currently open, increment unread badge!
           const newUnreadCount =
             !isFromMe && !isCurrentlyOpen ? currentUnread + 1 : isCurrentlyOpen ? 0 : currentUnread;
 
@@ -253,7 +351,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       );
     };
 
-    // Global real-time group updater
     const handleGlobalConversationUpdated = (updatedGroup: any) => {
       queryClient.setQueryData<Conversation[]>(
         queryKeys.conversations.list(),
@@ -272,12 +369,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     sock.on('connect_error', handleConnectError);
     sock.on('message:new', handleGlobalNewMessage);
     sock.on('conversation:updated', handleGlobalConversationUpdated);
-
-    // Support typing events from server
     sock.on('typing', handleTypingEvent);
     sock.on('user:typing', handleTypingEvent);
-    sock.on('typing:start', (data) => handleTypingEvent({ ...data, isTyping: true }));
-    sock.on('typing:stop', (data) => handleTypingEvent({ ...data, isTyping: false }));
 
     if (sock.connected) {
       setIsConnected(true);
@@ -291,8 +384,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       sock.off('conversation:updated', handleGlobalConversationUpdated);
       sock.off('typing', handleTypingEvent);
       sock.off('user:typing', handleTypingEvent);
-      sock.off('typing:start');
-      sock.off('typing:stop');
     };
   }, [token, isAuthenticated, queryClient, handleTypingEvent]);
 
@@ -344,13 +435,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         time: Date.now(),
       };
 
-      // 1. Socket.io
-      const sock = socket || getSocket(token);
-      if (sock && sock.connected) {
-        sock.emit('typing', payload);
-        sock.emit(isTyping ? 'typing:start' : 'typing:stop', payload);
-        sock.emit('user:typing', payload);
-      }
+      // 1. Next.js Real-time Typing Hub
+      fetch('/api/typing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
 
       // 2. BroadcastChannel
       if (broadcastChannelRef.current) {
@@ -361,7 +451,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // 3. LocalStorage event for cross-browser/tab sync
+      // 3. LocalStorage Event
       try {
         localStorage.setItem(
           'chatflow_typing_sync',
@@ -369,6 +459,13 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         );
       } catch (e) {
         // ignore
+      }
+
+      // 4. Socket.io
+      const sock = socket || getSocket(token);
+      if (sock && sock.connected) {
+        sock.emit('typing', payload);
+        sock.emit(isTyping ? 'typing:start' : 'typing:stop', payload);
       }
     },
     [socket, token]
