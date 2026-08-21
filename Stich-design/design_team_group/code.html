@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"inverse-primary":"#c3c0ff","surface-container-lowest":"#ffffff","on-primary-container":"#dad7ff","on-secondary":"#ffffff","tertiary-fixed-dim":"#ffb695","on-tertiary-fixed-variant":"#7b2f00","surface-container-low":"#f3f4f5","on-secondary-fixed-variant":"#004c6e","error-container":"#ffdad6","on-tertiary-fixed":"#351000","on-error":"#ffffff","on-error-container":"#93000a","tertiary-fixed":"#ffdbcc","surface-tint":"#4d44e3","secondary-container":"#39b8fd","background":"#f8f9fa","on-surface-variant":"#464555","outline-variant":"#c7c4d8","on-primary":"#ffffff","on-background":"#191c1d","surface-bright":"#f8f9fa","surface-variant":"#e1e3e4","secondary-fixed":"#c9e6ff","inverse-surface":"#2e3132","primary":"#3525cd","primary-fixed":"#e2dfff","on-tertiary-container":"#ffd2be","surface-container-highest":"#e1e3e4","outline":"#777587","primary-fixed-dim":"#c3c0ff","on-surface":"#191c1d","inverse-on-surface":"#f0f1f2","tertiary":"#7e3000","surface-container":"#edeeef","secondary-fixed-dim":"#89ceff","surface-container-high":"#e7e8e9","tertiary-container":"#a44100","secondary":"#006591","on-primary-fixed-variant":"#3323cc","on-secondary-fixed":"#001e2f","surface":"#f8f9fa","surface-dim":"#d9dadb","on-primary-fixed":"#0f0069","error":"#ba1a1a","primary-container":"#4f46e5","on-secondary-container":"#004666","on-tertiary":"#ffffff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"sm":"8px","margin-desktop":"32px","xl":"32px","lg":"24px","gutter":"16px","md":"16px","base":"4px","margin-mobile":"16px","xs":"4px"},"fontFamily":{"headline-lg":["Inter"],"headline-lg-mobile":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"body-md":["Inter"]},"fontSize":{"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg-mobile":["20px",{"lineHeight":"28px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"500"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}]}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-[320px] bg-surface-container-low border-r border-outline-variant z-50 flex flex-col"><div class="h-16 flex items-center px-lg border-b border-outline-variant gap-sm"><img alt="ChatFlow Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDgO2ZvJnv7pg3rjwLCM_MpkACel69W3woz9PVjmtYc8K8npa78gMXbOGhNlGuLNhLIBQ6f5VsCk8AbCVX4uKN-KV8_ALkOvNxf31Q6gTNJ4W61cyNJEgMVGMbuzCyJ0vpimzCXc7YT-ByNoDOrfh7qo0sHIc0ysTiRrKHB-m9eXBJnND0n0xxi476LgUW1j7ZnHQqWpmHVRsvuMqm5x_2Jwzty7vlYvpz1Lh6sfiXVDAjeAarntpG"><span class="font-headline-md text-headline-md text-on-surface">ChatFlow</span></div><div class="p-md"><div class="relative flex items-center w-full"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span><input class="w-full bg-surface-container-highest rounded-lg py-2 pl-10 pr-4 text-body-md focus:outline-none focus:ring-1 focus:ring-primary transition-all" placeholder="Search messages..." type="text"></div></div><nav class="flex-1 overflow-y-auto px-sm py-xs space-y-xs" data-active-classes="bg-secondary-container text-on-secondary-container font-bold"><a aria-current="page" class="flex items-center gap-md px-md py-3 rounded-xl transition-all bg-secondary-container text-on-secondary-container font-bold" data-path="messages" href="#"><span class="material-symbols-outlined">chat</span>Messages</a><a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all text-body-md" data-path="contacts" href="#"><span class="material-symbols-outlined">person</span>Contacts</a><a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all text-body-md" data-path="settings" href="#"><span class="material-symbols-outlined">settings</span>Settings</a></nav><div class="mt-auto p-md border-t border-outline-variant flex items-center justify-between bg-surface-container-low"><div class="flex items-center gap-sm"><img alt="Profile" class="w-10 h-10 rounded-full object-cover border-2 border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYGvEplNGN_KYvQU6kcQ51UrvRGyo7L3wfqBIYFU4uRt3w5I51Sw0MlBaGm34PI25egOVP2Ndqrh13dWkPuUVAV-quVHI9dGTxv5Vxuldiso2po6Y2MqnMjDGdNc2qoQbZmMx-FBEsLnfsbBqxwBL4W3rOxtSuvCyCR9OysGaSIyugbeEw2rlzY8Im9f_p6t4wYJfzLLbOaA4DK4q-lDcj6Abdt-kSyw7Xgn368VlGgvAitH2vJSjT"><div class="flex flex-col"><span class="font-label-md text-on-surface">Alex Rivera</span><span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Online</span></div></div><button class="p-sm hover:bg-surface-container-high rounded-full transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button></div></aside><div class="pl-[320px] h-screen flex flex-col"><header class="h-16 flex items-center justify-between px-lg bg-surface/80 backdrop-blur-xl border-b border-outline-variant sticky top-0 z-40"><div class="flex items-center gap-md"><div class="h-3 w-3 bg-green-500 rounded-full"></div><span class="font-headline-md text-headline-md">Conversation Thread</span></div><div class="flex items-center gap-md"><button class="p-sm hover:bg-surface-container rounded-full"><span class="material-symbols-outlined text-on-surface-variant">videocam</span></button><button class="p-sm hover:bg-surface-container rounded-full"><span class="material-symbols-outlined text-on-surface-variant">call</span></button><button class="p-sm hover:bg-surface-container rounded-full"><span class="material-symbols-outlined text-on-surface-variant">info</span></button></div></header><main class="flex-1 relative overflow-y-auto bg-surface"><div class="flex flex-col w-full h-full relative">
+<!-- Desktop Layout Container -->
+<div class="flex flex-1 overflow-hidden h-full">
+<!-- Main Chat Area -->
+<div class="flex-1 flex flex-col min-w-0 bg-surface border-r border-outline-variant">
+<!-- Chat Header (Specific to this view, overlapping global header concept slightly, but contained within main content area) -->
+<header class="h-16 flex-shrink-0 flex items-center justify-between px-lg bg-surface/95 backdrop-blur-md border-b border-outline-variant z-10">
+<div class="flex items-center gap-md">
+<!-- Group Avatar Combo -->
+<div class="relative w-10 h-10 flex-shrink-0">
+<div class="absolute top-0 left-0 w-6 h-6 rounded-full overflow-hidden border-[1.5px] border-surface z-10">
+<img class="w-full h-full object-cover" data-alt="Close up professional headshot of a woman with short dark hair on a warm light gray background, soft studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYjbNeOCq5kGVrPrZhlku-Ra788cfs-mvu9AwzzI6Hi1-t2--ObNlLvFGZNyvkVPSQtKIcqz0YAMbJytsEDPVWD8ds5l9RPS6mpxwE9WW6sXbhlboNA0bA0bRPUlyAppxBtKoe6Nrrt2Gw0iuYyRXPEuw7RKKvcQksPnTqARqQflbmci7GFCQafFU9_Py9wkk76uzDESjWovJ4dLWcc1foy3Tu0w7pQ-UkFQMFY3dRKt5vMphIdnN_">
+</div>
+<div class="absolute bottom-0 right-0 w-6 h-6 rounded-full overflow-hidden border-[1.5px] border-surface">
+<img class="w-full h-full object-cover" data-alt="Close up professional headshot of a man with glasses and a beard on a light blue background, bright lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCunsQq9ZxzMk4MvMkMQOHeVubkK-Ll-Gg2_i1sdYkH_8azV2IqlofeC65arFVTJJUtFS-LqEPvOcviWe2qMftXjNboYrStFgS41Ugr5zUSUypqu-_94Tnu8ebyUrX9-kWXObq9sb80XYrgHbEuqifNxTzuO91ttqo14c9Le4faHtvf_1EjAo0lmaapaWB6rG5QnUARWVn3KEH9-rR40WXeI5xR9bk5GShWs9xaUoeMArR0synDvh2P">
+</div>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Design Team</h1>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+              5 participants
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-full transition-colors relative group">
+<span class="material-symbols-outlined text-[20px]">search</span>
+<span class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Search Chat</span>
+</button>
+<button class="p-sm text-primary bg-primary/10 hover:bg-primary/20 rounded-full transition-colors relative group ml-2" id="toggle-details-btn">
+<span class="material-symbols-outlined text-[20px]">info</span>
+<span class="absolute -bottom-8 right-0 bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Hide Details</span>
+</button>
+</div>
+</header>
+<!-- Messages Scroll Area -->
+<div class="flex-1 overflow-y-auto p-lg space-y-xl bg-surface" id="message-container">
+<!-- Date Separator -->
+<div class="flex items-center justify-center relative my-lg">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/50"></div>
+</div>
+<span class="relative bg-surface px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+            Today
+          </span>
+</div>
+<!-- Message Block: John (Other) -->
+<div class="flex items-end gap-sm group max-w-[85%]">
+<img class="w-8 h-8 rounded-full flex-shrink-0 object-cover shadow-sm mb-1" data-alt="Professional headshot of John, a middle-aged man with short grey hair, wearing a navy sweater, warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8rYLsj0HNotr5BTXGH3385ld0N-2JU9gcexUO9U4hsowv8JbJI3PyTEep4_nbzuENWsuCe1sm38eh6QhzgrizbI3pVeD5f2eZPzb0XdnX9cbGMQd_MttwbjWjDd_-XOs7IxeD7tBTdNVezPd1KrntzAk2jTJE_RGiyH-HaP9UzJ12b_sD735iPR93WDrtqy-j0tUTm2N_J8hCuAwsfRBykwlA9-tD7VOMGFdzHkkRJBbCnyU__XgJ">
+<div class="flex flex-col gap-1 items-start min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-3 flex items-center gap-2">John Miller <span class="font-normal opacity-70">09:41 AM</span></span>
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm break-words">
+<p class="font-body-md text-body-md">Has everyone had a chance to review the latest wireframes for the dashboard overhaul? I dropped them in Figma last night.</p>
+</div>
+</div>
+<!-- Message Actions (Hover) -->
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 mb-2">
+<button class="text-on-surface-variant hover:text-on-surface p-1"><span class="material-symbols-outlined text-[16px]">add_reaction</span></button>
+<button class="text-on-surface-variant hover:text-on-surface p-1"><span class="material-symbols-outlined text-[16px]">reply</span></button>
+</div>
+</div>
+<!-- Message Block: David (Other) -->
+<div class="flex items-end gap-sm group max-w-[85%] mt-6">
+<img class="w-8 h-8 rounded-full flex-shrink-0 object-cover shadow-sm mb-1" data-alt="Professional headshot of David, a young man with dark curly hair and glasses, smiling, wearing a light blue shirt." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9-NcsotfXwgDMIo06gHx6-rGy18DgSRN7rT3gi9jTcWcK-27UQqGbC31dz2WVb4HC52fWHFoz5Cz-7cAxQ1unyX2UetlxZfo7q1Ac80_1bt0zfcm8NqQ0URxcPVw8PAv7mIayNzmMnd7_LUqONCzykN-spGvkBhTUnghnfRMNJfg-o2zvNui5CHqcCzAk24gYRYFWxLU3v-JWvj14hY7FYt0SMGy_M5GvIP-pFwz8qeF1h-hEckS8">
+<div class="flex flex-col gap-1 items-start min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-3 flex items-center gap-2">David Chen <span class="font-normal opacity-70">09:45 AM</span></span>
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm break-words">
+<p class="font-body-md text-body-md">Looking at them now. The navigation hierarchy makes much more sense. We might need to tweak the contrast on the secondary buttons though.</p>
+</div>
+<!-- Successive Message from David -->
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-l-sm px-4 py-3 shadow-sm break-words mt-1">
+<p class="font-body-md text-body-md">Specifically in dark mode.</p>
+</div>
+</div>
+<!-- Message Actions (Hover) -->
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1 mb-2 self-stretch justify-end pb-3">
+<button class="text-on-surface-variant hover:text-on-surface p-1"><span class="material-symbols-outlined text-[16px]">add_reaction</span></button>
+</div>
+</div>
+<!-- Message Block: Self (Alex) -->
+<div class="flex flex-col gap-1 items-end min-w-0 self-end ml-auto max-w-[85%] mt-6">
+<span class="font-label-sm text-label-sm text-on-surface-variant mr-3 flex items-center gap-2"><span class="font-normal opacity-70">09:50 AM</span></span>
+<div class="flex items-end gap-2 w-full justify-end group">
+<!-- Actions -->
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 mb-2">
+<button class="text-on-surface-variant hover:text-on-surface p-1"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+</div>
+<div class="bg-primary text-on-primary rounded-2xl rounded-br-sm px-4 py-3 shadow-sm break-words relative overflow-hidden group/bubble">
+<!-- Subtle gradient accent for primary bubble -->
+<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover/bubble:opacity-100 transition-opacity duration-500"></div>
+<p class="font-body-md text-body-md relative z-10">Good point on dark mode. Emma, can you run a quick accessibility check on those hex values?</p>
+</div>
+</div>
+</div>
+<!-- Message Block: Emma (Other) -->
+<div class="flex items-end gap-sm group max-w-[85%] mt-6">
+<img class="w-8 h-8 rounded-full flex-shrink-0 object-cover shadow-sm mb-1" data-alt="Professional headshot of Emma, a woman with long blonde hair tied back, wearing a minimalist black top, neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvF3ItwRaVwnUHqmLwLgqJ-_Fk7JrdEQyu0Sw27INDoi9qPTZ0bMHZtWqAUb6496ADTbNXPi4xUiMlkbJRU6AMrb4_VKv-avBhPfk2m6Tf-Jif-i63Jq1-jLfkxlvMcgdYsHxfQo62hm63HQLht7fEXkeEZTBbnQnDOfV_mGFEOLjGxWCB5Pe1z5uXJogFLPmpUbpv3uFPaa-yuY3vtOJI5TFZcia7Mf9u49uKllksEUNRe63rs9RA">
+<div class="flex flex-col gap-1 items-start min-w-0 w-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-3 flex items-center gap-2">Emma Watson <span class="font-normal opacity-70">09:55 AM</span></span>
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm break-words">
+<p class="font-body-md text-body-md">On it. I'll post the contrast ratios in a few minutes.</p>
+</div>
+<!-- Attachment -->
+<div class="mt-2 w-full max-w-sm rounded-xl overflow-hidden shadow-sm border border-outline-variant bg-surface-container-lowest group/attachment cursor-pointer hover:shadow-md transition-shadow">
+<div class="h-32 bg-surface-variant relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover/attachment:scale-105" data-alt="A stylized UI mockup showing a dashboard interface with charts and graphs in a dark theme, neon accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAMAhT-fTA32321PMft245GTYVRSBp3UP59DuJBj6uh8gndIt86cRAA9rUBNryKNggdo5KPPF9_YNAZUPYbrgM2yiXpgBDlnPJAkAhHFht3SWjNR3Qk-K4Gy7jG0S_wvVzRKQomZ1Q9vrZzKIFwSH9mf2legIkO2bLQaJcodHiyAEURuUmD8IZB9BEK7k9FZGlRITkgo7DqIH7bDSYlR3gukoVidWDCta59OWv_m2MYAa6ohCFAkb7')"></div>
+<div class="absolute inset-0 bg-black/10 group-hover/attachment:bg-black/20 transition-colors"></div>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded px-2 py-1 text-white font-label-sm text-[10px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">image</span> PNG
+                   </div>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">dark_mode_contrast_check.png</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2.4 MB</span>
+</div>
+<button class="text-primary hover:bg-primary/10 p-1.5 rounded-full transition-colors flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Typing Indicator (Simulated) -->
+<div class="flex items-end gap-sm group max-w-[85%] mt-6 opacity-60">
+<img class="w-8 h-8 rounded-full flex-shrink-0 object-cover shadow-sm mb-1 grayscale" data-alt="Professional headshot of John, a middle-aged man with short grey hair, wearing a navy sweater, warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoMG6RoXa8fbZJmoLcxvqnV2zJYe2SYQYvAHw8EE_01RNKF3Oao2nN_F4aymHCOomLAggUJQBN4ypsvHk-TEBlS6JT9z3TAnhcZPfODhS5lkUML0F_s3sN6N_SI_7QtKSwKYua584-3W2iACDcB3XejoUEseU5GHCH68aHN-VHnUymgpEeLcOKH0Cig7ReLeXe9d-GrOTCSmQtT_GhDHve40bE2wCBUB0ua7rYk0wkYBw1l3-xbr9S">
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm flex items-center gap-1 w-16 h-10">
+<span class="w-1.5 h-1.5 bg-on-surface-variant rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+<span class="w-1.5 h-1.5 bg-on-surface-variant rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+<span class="w-1.5 h-1.5 bg-on-surface-variant rounded-full animate-bounce"></span>
+</div>
+</div>
+<!-- Invisible spacer for bottom padding -->
+<div class="h-4"></div>
+</div>
+<!-- Message Input Area -->
+<div class="p-4 bg-surface border-t border-outline-variant flex-shrink-0 z-10">
+<div class="relative flex items-end gap-2 bg-surface-container-highest rounded-2xl p-2 focus-within:ring-2 focus-within:ring-primary/50 transition-all shadow-inner">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface rounded-full transition-colors flex-shrink-0 self-end mb-1">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<div class="flex-1 min-h-[44px] max-h-32 overflow-y-auto">
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-md text-body-md text-on-surface py-3 px-2 placeholder-on-surface-variant/60" placeholder="Message Design Team..." rows="1" style="min-height: 44px;"></textarea>
+</div>
+<div class="flex items-center gap-1 self-end mb-1">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface rounded-full transition-colors flex-shrink-0">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+<button class="p-2 bg-primary text-on-primary hover:bg-primary/90 rounded-full transition-colors flex-shrink-0 shadow-sm flex items-center justify-center h-10 w-10">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Details Panel (collapsible side panel) -->
+<aside class="w-[320px] bg-surface border-l border-outline-variant flex-shrink-0 flex flex-col h-full overflow-hidden transition-all duration-300 transform translate-x-0" id="details-panel">
+<!-- Panel Header -->
+<div class="h-16 flex-shrink-0 flex items-center px-lg border-b border-outline-variant bg-surface/95 backdrop-blur-md sticky top-0 z-20">
+<h2 class="font-headline-md text-headline-md text-on-surface">Group Details</h2>
+</div>
+<!-- Panel Content Scrollable -->
+<div class="flex-1 overflow-y-auto">
+<!-- Group Identity -->
+<div class="p-xl flex flex-col items-center justify-center border-b border-outline-variant/50 relative overflow-hidden">
+<!-- Decorative background blur -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+<div class="w-24 h-24 rounded-2xl bg-surface-container-high flex items-center justify-center mb-4 shadow-sm border border-outline-variant/30 relative">
+<span class="material-symbols-outlined text-primary text-[40px]">palette</span>
+<button class="absolute -bottom-2 -right-2 bg-surface text-on-surface-variant hover:text-primary rounded-full p-1.5 shadow-sm border border-outline-variant transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-center">Design Team</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mt-1">Product Design &amp; UX Research</p>
+<div class="flex gap-2 mt-6 w-full justify-center">
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-surface-container transition-colors w-16 group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">call</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-primary transition-colors">Call</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-surface-container transition-colors w-16 group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-primary transition-colors">Video</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-surface-container transition-colors w-16 group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-primary transition-colors">Search</span>
+</button>
+</div>
+</div>
+<!-- Participants Section -->
+<div class="py-lg border-b border-outline-variant/50">
+<div class="px-lg flex items-center justify-between mb-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">5 Participants</h4>
+<button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+</button>
+</div>
+<div class="flex flex-col">
+<!-- Self -->
+<div class="flex items-center gap-3 px-lg py-2 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="relative">
+<img alt="Alex Rivera" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYGvEplNGN_KYvQU6kcQ51UrvRGyo7L3wfqBIYFU4uRt3w5I51Sw0MlBaGm34PI25egOVP2Ndqrh13dWkPuUVAV-quVHI9dGTxv5Vxuldiso2po6Y2MqnMjDGdNc2qoQbZmMx-FBEsLnfsbBqxwBL4W3rOxtSuvCyCR9OysGaSIyugbeEw2rlzY8Im9f_p6t4wYJfzLLbOaA4DK4q-lDcj6Abdt-kSyw7Xgn368VlGgvAitH2vJSjT">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface truncate">Alex Rivera</span>
+<span class="bg-primary/10 text-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded">You</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant text-xs truncate block">Lead Designer</span>
+</div>
+</div>
+<!-- Emma -->
+<div class="flex items-center gap-3 px-lg py-2 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Professional headshot of Emma, a woman with long blonde hair tied back, wearing a minimalist black top, neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSlUNkXHjBdmQOyAVJb0lgsQOcdMU1GTYtNdikG3j2TRUOi2M1c0EGNOzwTw7FVpWZFss5hR-A5IhK-EpHlalZNci5FP27qg-Htg9CvTf4fXwAn6rL7Ow0G09BaB-BDeZmV5dUKKvc2-NRYH29m7ptdVLoTE0-3FfhdwS25CJMTZr6PjEye4It90ZHiK1RjvIEQcw3lN80Z5_UwtewSayt9_YpRUDo87hxkBCOP6dyk9ebdlV1O61m">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate block">Emma Watson</span>
+<span class="font-body-md text-body-md text-on-surface-variant text-xs truncate block">UI Designer</span>
+</div>
+</div>
+<!-- David -->
+<div class="flex items-center gap-3 px-lg py-2 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Professional headshot of David, a young man with dark curly hair and glasses, smiling, wearing a light blue shirt." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_03MOuhHE9LzPuHUpaOAWyfRh2A1moPKqknXFz-qMItDyYvijK-e_zhCSAp4GFTCA3S5_WthmrOXlZ4d1LXJBXwwzE4_6i3VyUvPSl3rkKTj7YQi5daA4XPu3ix4Qk9_aFrO9_wXQEGPpOGhEuqjWEUhlOBSR4HMAM-nPNsPkieEeXVxsxZzQ2sAOSBJQgVWaNyMKNlOlyq7euNgjn11ZaH4lx3diuh23OE-xlcvhMi3hlAUwuq-P">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate block">David Chen</span>
+<span class="font-body-md text-body-md text-on-surface-variant text-xs truncate block">UX Researcher</span>
+</div>
+</div>
+<!-- John -->
+<div class="flex items-center gap-3 px-lg py-2 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Professional headshot of John, a middle-aged man with short grey hair, wearing a navy sweater, warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq56VtCxx60V9bGW3n-iC8FOfwmC1zZ7PbdH9CXICigaXRk2_arHWu91kAryeVfVrXqyOxWYVpUtMDiUZJAYHSZLb0fpGElGuIrc0D1wuG9O-azg60G6Estqu4N3bKl6OtgmrYHbq8kBC7JBl9tiGaCP1a4ofV-qijOCbD0lyU7EfnWbt27KmGx6eW2G-cXNviFppIGgT4Seo7CgXh1OlSL0MwgnY3UtiERzpXi_w7h_PC3jXzMfae">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-surface-variant border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate block">John Miller</span>
+<span class="font-body-md text-body-md text-on-surface-variant text-xs truncate block">Product Manager</span>
+</div>
+</div>
+<!-- Sarah -->
+<div class="flex items-center gap-3 px-lg py-2 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="relative">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-headline-md text-headline-md">S</div>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-orange-400 border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate block">Sarah Jenkins</span>
+<span class="font-body-md text-body-md text-on-surface-variant text-xs truncate block">Away for 2h</span>
+</div>
+</div>
+</div>
+<div class="px-lg mt-2">
+<button class="w-full py-2 flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:bg-primary/5 rounded-lg transition-colors border border-dashed border-primary/30">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                  Add Participant
+               </button>
+</div>
+</div>
+<!-- Shared Media/Files Section -->
+<div class="py-lg">
+<div class="px-lg flex items-center justify-between mb-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Shared Files</h4>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<!-- File Grid (Bento style mini) -->
+<div class="px-lg grid grid-cols-2 gap-2">
+<!-- File 1 (Image) -->
+<div class="aspect-square rounded-xl bg-surface-container-high overflow-hidden group cursor-pointer relative shadow-sm border border-outline-variant/30">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500" data-alt="A stylized UI mockup showing a dashboard interface with charts and graphs in a dark theme, neon accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBiw0lietZuwdRaEMqrRnO1G1KSBVHfLRag6zfE0Gr3-RT3ssm8SKXERnbG50u_lp9lGQsmRVQD81vncx-0zJRbH41EjpMCgh4IQTVwQxjd1AS9vwkIvlFlOgTaj8bJdBCBG03kBW-qbj9FG-aPWnIf4coVNoZZJD5D7DZ3MimVwWm1b3cZqt-hFANp2Ahq16xFGALrnPuJR67aq4j-3jYKLafzhwVE7lO50XL0GXUirjLS_m-QceAk')"></div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">fullscreen</span>
+</div>
+</div>
+<!-- File 2 (Document) -->
+<div class="aspect-square rounded-xl bg-surface-container overflow-hidden group cursor-pointer relative shadow-sm border border-outline-variant/30 p-3 flex flex-col justify-between hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-blue-500 text-[24px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="text-[10px] font-label-sm text-on-surface-variant">PDF</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Q3_Design_System_Guidelines.pdf</p>
+</div>
+</div>
+<!-- File 3 (Image) -->
+<div class="aspect-square rounded-xl bg-surface-container-high overflow-hidden group cursor-pointer relative shadow-sm border border-outline-variant/30">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500" data-alt="A close up shot of a color palette swatch book on a minimalist white desk, bright natural lighting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDMUExBh94_yVM68XICbSCxGGlJu9m3hhYQE4L3YjIUhzyGTtxqW0Mhvo8TqMrVXiu3nzHXx1_iDmuv02PPKBa1-itnlBJiojrq4oUrTjwb_8F2RikqHoteY9_onkeGqUICGgCMaA4wfqrxx5fLFTq-EKDqOe4FPaLjYbL91RtD7fNAiV2yB6aJYZoM3FWUuevYHgBECEI0hrP5_v-3Ma9zfPC803y4UBLugdYC0x9BOU58HZLUqlUA')"></div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">fullscreen</span>
+</div>
+</div>
+<!-- File 4 (More) -->
+<div class="aspect-square rounded-xl bg-surface-container overflow-hidden group cursor-pointer relative shadow-sm border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<div class="text-center">
+<span class="font-headline-md text-headline-md text-primary block">+12</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Files</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Spacer for scrolling -->
+<div class="h-8"></div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  // Simple script to toggle the right details panel
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-details-btn');
+    const detailsPanel = document.getElementById('details-panel');
+    let isPanelOpen = true;
+
+    if (toggleBtn && detailsPanel) {
+      toggleBtn.addEventListener('click', () => {
+        isPanelOpen = !isPanelOpen;
+        if (isPanelOpen) {
+          detailsPanel.style.width = '320px';
+          detailsPanel.style.opacity = '1';
+          detailsPanel.style.borderLeftWidth = '1px';
+           toggleBtn.classList.add('bg-primary/10', 'text-primary');
+           toggleBtn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+           toggleBtn.querySelector('span:last-child').textContent = 'Hide Details';
+        } else {
+          detailsPanel.style.width = '0px';
+          detailsPanel.style.opacity = '0';
+          detailsPanel.style.borderLeftWidth = '0px';
+          
+          toggleBtn.classList.remove('bg-primary/10', 'text-primary');
+          toggleBtn.classList.add('bg-surface-container', 'text-on-surface-variant');
+          toggleBtn.querySelector('span:last-child').textContent = 'Show Details';
+        }
+      });
+    }
+
+    // Auto-scroll to bottom of messages (simulated initial state)
+    const msgContainer = document.getElementById('message-container');
+    if (msgContainer) {
+       msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+    
+    // Simulating the active state in the assumed sidebar navigation (even though it's outside our output, we can add a visual cue if we were rendering it, but here we just ensure the internal state feels "active")
+    // Note: Instructions say NOT to output navigation bars or App Shell, so we rely on the context given that 'Design Team' is active.
+  });
+</script></main></div></body></html>

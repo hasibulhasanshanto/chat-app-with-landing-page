@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"inverse-primary":"#c3c0ff","surface-container-lowest":"#ffffff","on-primary-container":"#dad7ff","on-secondary":"#ffffff","tertiary-fixed-dim":"#ffb695","on-tertiary-fixed-variant":"#7b2f00","surface-container-low":"#f3f4f5","on-secondary-fixed-variant":"#004c6e","error-container":"#ffdad6","on-tertiary-fixed":"#351000","on-error":"#ffffff","on-error-container":"#93000a","tertiary-fixed":"#ffdbcc","surface-tint":"#4d44e3","secondary-container":"#39b8fd","background":"#f8f9fa","on-surface-variant":"#464555","outline-variant":"#c7c4d8","on-primary":"#ffffff","on-background":"#191c1d","surface-bright":"#f8f9fa","surface-variant":"#e1e3e4","secondary-fixed":"#c9e6ff","inverse-surface":"#2e3132","primary":"#3525cd","primary-fixed":"#e2dfff","on-tertiary-container":"#ffd2be","surface-container-highest":"#e1e3e4","outline":"#777587","primary-fixed-dim":"#c3c0ff","on-surface":"#191c1d","inverse-on-surface":"#f0f1f2","tertiary":"#7e3000","surface-container":"#edeeef","secondary-fixed-dim":"#89ceff","surface-container-high":"#e7e8e9","tertiary-container":"#a44100","secondary":"#006591","on-primary-fixed-variant":"#3323cc","on-secondary-fixed":"#001e2f","surface":"#f8f9fa","surface-dim":"#d9dadb","on-primary-fixed":"#0f0069","error":"#ba1a1a","primary-container":"#4f46e5","on-secondary-container":"#004666","on-tertiary":"#ffffff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"sm":"8px","margin-desktop":"32px","xl":"32px","lg":"24px","gutter":"16px","md":"16px","base":"4px","margin-mobile":"16px","xs":"4px"},"fontFamily":{"headline-lg":["Inter"],"headline-lg-mobile":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"body-md":["Inter"]},"fontSize":{"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg-mobile":["20px",{"lineHeight":"28px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"500"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}]}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"></head><body class="bg-surface font-body-md text-on-surface"><main class="min-h-screen flex items-center justify-center p-lg"><div class="flex flex-col w-full h-full items-center justify-center bg-surface relative overflow-hidden p-gutter">
+<!-- Decorative background elements -->
+<div class="absolute -top-32 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-32 -right-32 w-96 h-96 bg-secondary-container/10 rounded-full blur-3xl"></div>
+<!-- Login Card -->
+<div class="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-xl p-xl relative z-10">
+<!-- Header -->
+<div class="text-center mb-xl">
+<div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-lg shadow-md">
+<span class="material-symbols-outlined text-on-primary text-[32px]">chat_bubble</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Welcome back</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Connect with your people instantly</p>
+</div>
+<!-- Form -->
+<form class="space-y-lg flex flex-col w-full" id="loginForm">
+<!-- Name Input -->
+<div class="space-y-sm flex flex-col w-full">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="fullName">Full Name</label>
+<div class="relative flex items-center w-full group">
+<span class="material-symbols-outlined absolute left-md text-on-surface-variant/50 group-focus-within:text-primary transition-colors">person</span>
+<input class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg py-md pl-12 pr-md focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-on-surface-variant/40 border border-outline-variant/30 focus:border-primary" id="fullName" placeholder="Jane Doe" required="" type="text">
+</div>
+</div>
+<!-- Phone Input -->
+<div class="space-y-sm flex flex-col w-full">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="phoneNumber">Phone Number</label>
+<div class="relative flex items-center w-full group h-12 bg-surface-container-low rounded-lg border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary focus-within:bg-surface-container-lowest transition-all overflow-hidden">
+<!-- Country Code Selector (Simplified) -->
+<button class="flex items-center space-x-xs pl-md pr-sm py-sm border-r border-outline-variant/30 h-full hover:bg-surface-container-high transition-colors text-on-surface focus:outline-none" type="button">
+<span class="font-body-md text-body-md font-medium">US</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">expand_more</span>
+</button>
+<!-- Phone Number Input -->
+<span class="font-body-md text-body-md text-on-surface-variant pl-sm">+1</span>
+<input class="w-full bg-transparent text-on-surface font-body-md text-body-md py-md px-sm focus:outline-none placeholder:text-on-surface-variant/40" id="phoneNumber" pattern="[0-9\-\(\)\s]+" placeholder="(555) 123-4567" required="" type="tel">
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md uppercase tracking-wider py-md rounded-lg shadow-md hover:shadow-lg hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center space-x-sm mt-md" type="submit">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Footer -->
+<div class="mt-xl text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+        New here? No problem — we'll create your account automatically.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    
+    // Simple loading state simulation
+    btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span><span>Connecting...</span>`;
+    btn.classList.add('opacity-80', 'pointer-events-none');
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.classList.remove('opacity-80', 'pointer-events-none');
+      // In a real app, this would handle the auth flow and redirect
+      alert('Authentication simulation complete.');
+    }, 1500);
+  });
+
+  // Basic phone number formatting
+  const phoneInput = document.getElementById('phoneNumber');
+  phoneInput.addEventListener('input', function(e) {
+    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+    e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+  });
+</script></main></body></html>

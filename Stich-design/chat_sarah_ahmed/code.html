@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "inverse-primary": "#c3c0ff", "surface-container-lowest": "#ffffff", "on-primary-container": "#dad7ff", "on-secondary": "#ffffff", "tertiary-fixed-dim": "#ffb695", "on-tertiary-fixed-variant": "#7b2f00", "surface-container-low": "#f3f4f5", "on-secondary-fixed-variant": "#004c6e", "error-container": "#ffdad6", "on-tertiary-fixed": "#351000", "on-error": "#ffffff", "on-error-container": "#93000a", "tertiary-fixed": "#ffdbcc", "surface-tint": "#4d44e3", "secondary-container": "#39b8fd", "background": "#f8f9fa", "on-surface-variant": "#464555", "outline-variant": "#c7c4d8", "on-primary": "#ffffff", "on-background": "#191c1d", "surface-bright": "#f8f9fa", "surface-variant": "#e1e3e4", "secondary-fixed": "#c9e6ff", "inverse-surface": "#2e3132", "primary": "#3525cd", "primary-fixed": "#e2dfff", "on-tertiary-container": "#ffd2be", "surface-container-highest": "#e1e3e4", "outline": "#777587", "primary-fixed-dim": "#c3c0ff", "on-surface": "#191c1d", "inverse-on-surface": "#f0f1f2", "tertiary": "#7e3000", "surface-container": "#edeeef", "secondary-fixed-dim": "#89ceff", "surface-container-high": "#e7e8e9", "tertiary-container": "#a44100", "secondary": "#006591", "on-primary-fixed-variant": "#3323cc", "on-secondary-fixed": "#001e2f", "surface": "#f8f9fa", "surface-dim": "#d9dadb", "on-primary-fixed": "#0f0069", "error": "#ba1a1a", "primary-container": "#4f46e5", "on-secondary-container": "#004666", "on-tertiary": "#ffffff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "sm": "8px", "margin-desktop": "32px", "xl": "32px", "lg": "24px", "gutter": "16px", "md": "16px", "base": "4px", "margin-mobile": "16px", "xs": "4px" }, "fontFamily": { "headline-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }] } } } }</script><style>@layer base { body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-background text-on-surface font-body-md"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center gap-md"><button class="w-11 h-11 -ml-2 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface" onclick="history.back()"><span class="material-symbols-outlined">arrow_back</span></button><div class="flex-1"><h1 class="font-headline-md text-headline-md truncate">Chat Detail</h1></div><div class="flex items-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYGvEplNGN_KYvQU6kcQ51UrvRGyo7L3wfqBIYFU4uRt3w5I51Sw0MlBaGm34PI25egOVP2Ndqrh13dWkPuUVAV-quVHI9dGTxv5Vxuldiso2po6Y2MqnMjDGdNc2qoQbZmMx-FBEsLnfsbBqxwBL4W3rOxtSuvCyCR9OysGaSIyugbeEw2rlzY8Im9f_p6t4wYJfzLLbOaA4DK4q-lDcj6Abdt-kSyw7Xgn368VlGgvAitH2vJSjT"></div></div></header><main class="relative w-full pt-16 min-h-screen bg-background"><div class="flex flex-col w-full h-[calc(100vh-64px)] relative bg-background">
+<!-- Chat Messages Area -->
+<div class="flex-1 overflow-y-auto px-margin-mobile py-lg flex flex-col gap-sm pb-[90px]" id="chat-messages">
+<!-- Date Divider -->
+<div class="flex justify-center my-md">
+<span class="text-label-sm text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full">Today</span>
+</div>
+<!-- Message from Sarah (Receiver) -->
+<div class="flex flex-col items-start gap-1 max-w-[85%]">
+<div class="bg-surface-container text-on-surface px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+<p class="font-body-md">Hey! Are we still on for the project review meeting at 3 PM?</p>
+</div>
+<span class="text-[10px] text-on-surface-variant ml-1">10:42 AM</span>
+</div>
+<!-- Message from Sarah (Receiver) -->
+<div class="flex flex-col items-start gap-1 max-w-[85%] mt-sm">
+<div class="bg-surface-container text-on-surface px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+<p class="font-body-md">I have the new design files ready to present. 🎨</p>
+</div>
+<span class="text-[10px] text-on-surface-variant ml-1">10:43 AM</span>
+</div>
+<!-- Message from User (Sender) -->
+<div class="flex flex-col items-end gap-1 max-w-[85%] self-end mt-md">
+<div class="bg-primary text-on-primary px-4 py-3 rounded-2xl rounded-tr-sm shadow-sm">
+<p class="font-body-md">Yes, absolutely! I'm really looking forward to seeing what you've put together.</p>
+</div>
+<div class="flex items-center gap-1 mr-1">
+<span class="text-[10px] text-on-surface-variant">10:45 AM</span>
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">done_all</span>
+</div>
+</div>
+<!-- Message from User (Sender) -->
+<div class="flex flex-col items-end gap-1 max-w-[85%] self-end mt-sm">
+<div class="bg-primary text-on-primary px-4 py-3 rounded-2xl rounded-tr-sm shadow-sm">
+<p class="font-body-md">Do you need me to prepare anything on the frontend side for the discussion?</p>
+</div>
+<div class="flex items-center gap-1 mr-1">
+<span class="text-[10px] text-on-surface-variant">10:46 AM</span>
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">done_all</span>
+</div>
+</div>
+<!-- Message from Sarah (Receiver) with Image -->
+<div class="flex flex-col items-start gap-1 max-w-[85%] mt-md">
+<div class="bg-surface-container text-on-surface p-2 rounded-2xl rounded-tl-sm shadow-sm">
+<img alt="Design Sneak Peek" class="w-full h-auto rounded-xl mb-2 object-cover max-h-48" data-alt="A clean, minimalist UI mockup of a dashboard screen with a light mode color palette, showing a sleek sidebar and data visualization charts in indigo and light blue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuNWGt9kpKOWbfCuWc1tZDKLHFtZg8Ut7fZDNlwjML9jCO70JL1zY8V3Dd6F_u1oELWSeGIj4XoaysLaB9bwrR5NDY1MCdTtjBiZmgIP491gqsYFCz2ipkLTEIr74yRKN5M7gQl2mtNNIPVPuGItindLtWSGIXJsoy5U0jRCCeYF--TVPj4C9GYZpqnLX4tfLWZ3AQhvdApkDq-xR12M1tY-3UbSGQxsMhW--tyDB5NVl6BVVSB2PS">
+<p class="font-body-md px-2 pb-1">Just a quick sneak peek! No need to prep anything, just bring your feedback.</p>
+</div>
+<span class="text-[10px] text-on-surface-variant ml-1">10:50 AM</span>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-center gap-2 mt-sm text-on-surface-variant ml-2" id="typing-indicator">
+<div class="flex gap-1 bg-surface-container px-4 py-2 rounded-full shadow-sm">
+<div class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+<div class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+<div class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+</div>
+</div>
+</div>
+<!-- Fixed Bottom Composer -->
+<div class="absolute bottom-0 w-full bg-surface/95 backdrop-blur-md px-margin-mobile py-sm pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-10 transition-all duration-200" id="composer-area">
+<div class="flex items-end gap-2 bg-surface-container-lowest rounded-3xl p-1 shadow-sm ring-1 ring-outline-variant/30 focus-within:ring-primary focus-within:shadow-md transition-all">
+<!-- Attachment Button -->
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low rounded-full flex-shrink-0 self-end mb-1">
+<span class="material-symbols-outlined text-[22px]">add_circle</span>
+</button>
+<!-- Text Input -->
+<div class="flex-1 min-h-[44px] max-h-[120px] overflow-y-auto flex items-center py-2">
+<textarea class="w-full bg-transparent border-none outline-none resize-none font-body-md text-on-surface placeholder:text-on-surface-variant/50 max-h-full" id="message-input" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" placeholder="Write a message..." rows="1"></textarea>
+</div>
+<!-- Emoji Button -->
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low rounded-full flex-shrink-0 self-end mb-1">
+<span class="material-symbols-outlined text-[22px]">mood</span>
+</button>
+<!-- Send Button -->
+<button class="p-2 bg-primary text-on-primary hover:bg-primary-container transition-transform active:scale-95 rounded-full flex-shrink-0 self-end mb-1 shadow-sm flex items-center justify-center h-10 w-10">
+<span class="material-symbols-outlined text-[20px] ml-0.5">send</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+    // Scroll to bottom of chat on load
+    document.addEventListener("DOMContentLoaded", () => {
+        const chatMessages = document.getElementById("chat-messages");
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('message-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.value.trim().length > 0) {
+                 document.getElementById('typing-indicator').style.display = 'none';
+            } else {
+                 document.getElementById('typing-indicator').style.display = 'flex';
+            }
+        });
+        
+        // Focus input to simulate active state
+        setTimeout(() => {
+            textarea.focus();
+        }, 300);
+    });
+</script></main></body></html>

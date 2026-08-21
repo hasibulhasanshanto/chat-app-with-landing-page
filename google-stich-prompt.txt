@@ -1,0 +1,427 @@
+Design a complete modern messaging/chat web application UI that will later be implemented using Next.js and Tailwind CSS.
+
+The app should feel like a polished production-ready messaging platform — clean, minimal, premium, responsive, and easy to use. Think of the usability and visual quality of modern apps like WhatsApp Web, Telegram, Slack, and Messenger, but create an original design rather than copying any existing product.
+
+## Design System
+
+Use:
+
+* Modern SaaS-style interface
+* Clean white/light-gray base
+* Subtle borders and shadows
+* Rounded corners, around 10–14px
+* Strong typography hierarchy
+* One professional primary accent color
+* Excellent spacing and visual consistency
+* Clear hover, active, focus, disabled, loading, and error states
+* Desktop and mobile responsive layouts
+* Accessible contrast and readable typography
+* Use realistic mock names, phone numbers, avatars, messages, and timestamps
+
+Avoid excessive gradients, excessive animations, overly colorful UI, or unnecessary decorative elements.
+
+## Main Application Layout
+
+Create a desktop messaging dashboard with three major areas:
+
+### 1. Left Sidebar — Conversations
+
+Width approximately 320–360px.
+
+Top section:
+
+* App logo/name: "ChatFlow"
+* Search icon/button
+* User profile avatar
+* User name
+* Online status
+* Settings icon
+
+Below:
+
+* Large "New Conversation" button
+* Search conversations input
+
+Conversation list:
+
+* Recent conversations
+* Circular avatar
+* Contact/group name
+* Last message preview
+* Timestamp
+* Unread message badge
+* Online indicator
+* Active conversation state
+* Group avatar treatment for group conversations
+
+Example conversations:
+
+* Sarah Ahmed
+* John Smith
+* Design Team
+* Marketing Team
+* David Rahman
+* Emma Wilson
+
+Clearly distinguish unread conversations from read conversations.
+
+## 2. Main Chat Area
+
+The center area should be the primary messaging interface.
+
+Header:
+
+* Contact/group avatar
+* Contact/group name
+* Online status or participant count
+* Search messages icon
+* More/options menu
+
+For one-to-one conversation:
+"Sarah Ahmed"
+"Online"
+
+For group:
+"Design Team"
+"5 participants"
+
+Message area:
+
+* Date separators such as "Today" and "Yesterday"
+* Incoming messages aligned left
+* Outgoing messages aligned right
+* Clearly different visual treatment for sender and receiver
+* Message bubbles with comfortable padding
+* Timestamp displayed on each message
+* Optional read/delivery indicator on outgoing messages
+* Support multiline messages
+* Long message wrapping
+* Group sender names where appropriate
+
+Example messages:
+
+Incoming:
+"Hey! Are we still meeting at 4 PM?"
+10:42 AM
+
+Outgoing:
+"Yes, absolutely. I'll be there."
+10:43 AM
+
+Incoming:
+"Perfect! See you then."
+
+Add realistic conversation history with enough messages to make the interface feel complete.
+
+## Message Composer
+
+Fixed at the bottom of the chat area.
+
+Include:
+
+* Attachment button
+* Text input
+* Emoji button
+* Send button
+* Disabled send button when input is empty
+
+The design must clearly communicate that an empty message cannot be sent.
+
+For the input placeholder use:
+"Write a message..."
+
+When typing:
+
+* Send button becomes active
+* Input remains visually focused
+
+## 3. Right Details Panel
+
+Create an optional right-side information panel for desktop.
+
+For one-to-one conversations:
+
+* Large profile avatar
+* Name
+* Phone number
+* Online status
+* Shared media/files section
+* Search in conversation
+* Notification toggle
+* Block/report options
+
+For groups:
+
+* Group avatar
+* Group name
+* Participant count
+* Participant list
+* Add participant button
+* Shared media/files
+* Notification settings
+* Leave group option
+
+This panel should be collapsible.
+
+## Login Screen
+
+Create a separate polished login page.
+
+Centered authentication card.
+
+Include:
+
+* ChatFlow logo
+* Heading: "Welcome back"
+* Subtitle: "Connect with your people instantly."
+* Phone number input
+* Name input
+* "Continue" / "Log in" button
+* Small supporting text explaining that new phone numbers are automatically registered
+
+Example:
+"New here? No problem — we'll create your account automatically."
+
+Include:
+
+* Phone country code selector
+* Phone number validation state
+* Name validation state
+* Loading state
+* API error state
+
+Do NOT create a separate registration page.
+
+## New Conversation Flow
+
+Design a modal/drawer for starting a new conversation.
+
+Heading:
+"New Conversation"
+
+Include:
+
+* Search input: "Search by name or phone number..."
+* Search results
+* User avatar
+* Name
+* Phone number
+* Online status
+* Start chat action
+
+The user should be able to search using either:
+
+* Phone number
+* Name
+
+Include:
+
+* Loading search state
+* No results state
+* Error state
+
+Example empty state:
+"No contacts found"
+
+## Create Group Flow
+
+Design a multi-step modal/drawer for creating a group conversation.
+
+Step 1:
+"Create New Group"
+
+Fields:
+
+* Group name
+* Group avatar upload
+
+Step 2:
+"Add Participants"
+
+Include:
+
+* Search participants
+* Selectable contact list
+* Checkbox/selection indicator
+* Selected participant chips
+
+Show:
+"3 participants selected"
+
+Primary button:
+"Create Group"
+
+Include appropriate validation and loading states.
+
+## Empty Chat State
+
+When no conversation is selected, show a beautiful empty state in the main chat area.
+
+Include:
+
+* Simple messaging illustration/icon
+* Heading: "Your messages, all in one place"
+* Description: "Select a conversation or start a new one to begin chatting."
+* "New Conversation" CTA
+
+Keep it minimal and elegant.
+
+## Loading States
+
+Design skeleton loaders for:
+
+* Conversation list
+* Chat messages
+* User search results
+* Group participants
+* Profile details
+
+Use subtle animated skeleton placeholders.
+
+## Error States
+
+Design friendly error states for:
+
+* Failed conversation loading
+* Failed message loading
+* Failed message sending
+* Failed user search
+* Network/API failure
+
+Example:
+"Something went wrong"
+"We couldn't load your messages. Please try again."
+
+Include:
+"Try Again" button.
+
+## Real-Time Message State
+
+Show how a newly received message should visually appear without refreshing the page.
+
+Include:
+
+* New incoming message
+* Optional subtle unread/new message indicator
+* Conversation list preview updating automatically
+
+Do not design the UI around page refreshes.
+
+## Auto-Scroll Behavior
+
+The chat design should support intelligent auto-scroll behavior.
+
+When the user is already at the bottom:
+
+* New messages automatically appear
+* Chat stays at the latest message
+
+When the user has scrolled upward:
+
+* Do NOT force the chat to the bottom
+* Show a small floating button such as:
+  "↓ New messages"
+* Clicking it scrolls to the latest message
+
+Create a visual state showing this behavior.
+
+## Responsive Mobile Design
+
+Create a dedicated mobile-responsive version.
+
+On mobile:
+
+* Conversation list becomes the first screen
+* Tapping a conversation opens the chat screen
+* Chat header includes back button
+* Right details panel becomes a bottom sheet/full-screen panel
+* New conversation becomes a full-screen modal
+* Group creation becomes mobile-friendly
+* Message composer remains fixed to bottom
+* Conversation sidebar should not permanently occupy screen width
+
+Make sure:
+
+* Buttons are touch-friendly
+* Inputs are easy to use
+* Message bubbles have appropriate width
+* Navigation is intuitive
+* No horizontal overflow
+
+## Required Screens
+
+Generate designs for all of these:
+
+1. Login screen
+2. Main messaging dashboard — no conversation selected
+3. One-to-one conversation
+4. Group conversation
+5. New conversation modal
+6. Search results
+7. Create group — participant selection
+8. Create group — group details
+9. Chat loading state
+10. Empty search state
+11. Error state
+12. Failed message sending state
+13. New incoming message / real-time state
+14. User scrolled up with "New messages" button
+15. Conversation details panel
+16. Mobile conversation list
+17. Mobile chat screen
+18. Mobile profile/details screen
+
+## UX Requirements
+
+The final design should prioritize:
+
+* Fast scanning
+* Clear conversation hierarchy
+* Obvious current conversation
+* Clear sender/receiver distinction
+* Easy message composition
+* Excellent empty/loading/error states
+* Responsive behavior
+* Accessibility
+* Production-ready component structure
+
+Use reusable UI patterns that can easily be translated into Next.js + Tailwind CSS components.
+
+Suggested reusable components:
+
+* Sidebar
+* ConversationItem
+* Avatar
+* ChatHeader
+* MessageBubble
+* DateSeparator
+* MessageComposer
+* UserSearchResult
+* NewConversationModal
+* CreateGroupModal
+* ParticipantSelector
+* DetailsPanel
+* EmptyState
+* LoadingSkeleton
+* ErrorState
+* NewMessageIndicator
+
+## Visual Direction
+
+The final result should look like a professional real-world SaaS messaging product that could be shipped to production.
+
+Prioritize:
+
+* Premium but simple visual design
+* Excellent whitespace
+* Consistent typography
+* Strong visual hierarchy
+* Subtle borders
+* Soft shadows
+* Beautiful avatars
+* Clear interaction states
+* Responsive desktop/mobile layouts
+
+Do not make it look like a generic template. Give the application a distinctive but professional identity under the name "ChatFlow".
+
+Create a cohesive design system and ensure every screen looks like part of the same product.
