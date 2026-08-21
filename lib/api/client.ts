@@ -1,33 +1,16 @@
 import { CustomApiError } from '@/types/api';
+import { getAuthToken, setAuthToken, removeAuthToken } from '@/lib/cookies';
 
 const API_BASE_URL = 'https://frontend-task-chatapp.onrender.com/api';
 
-export const TOKEN_STORAGE_KEY = 'chatflow_jwt_token';
-
-export function getStoredToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
-}
-
-export function setStoredToken(token: string): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  // Also set cookie for SSR / routing consistency
-  document.cookie = `${TOKEN_STORAGE_KEY}=${token}; path=/; max-age=2592000; SameSite=Lax`;
-}
-
-export function removeStoredToken(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem(TOKEN_STORAGE_KEY);
-  document.cookie = `${TOKEN_STORAGE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-}
+export { getAuthToken, setAuthToken, removeAuthToken };
 
 interface RequestOptions extends RequestInit {
   token?: string | null;
 }
 
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const token = options.token !== undefined ? options.token : getStoredToken();
+  const token = options.token !== undefined ? options.token : getAuthToken();
 
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -75,6 +58,9 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     if (err instanceof CustomApiError) {
       throw err;
     }
-    throw new CustomApiError(err?.message || 'Network error occurred. Please check your connection.', 'NETWORK_ERROR');
+    throw new CustomApiError(
+      err?.message || 'Network error occurred. Please check your connection.',
+      'NETWORK_ERROR'
+    );
   }
 }

@@ -1,77 +1,34 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useLoginMutation } from '@/hooks/queries/useAuthQueries';
 import { User } from '@/types/user';
 import { AuthContextType } from '@/types/auth';
-import { loginApi, getMeApi } from '@/lib/api/auth';
-import { getStoredToken, setStoredToken, removeStoredToken } from '@/lib/api/client';
-import { disconnectSocket } from '@/lib/socket';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { user, token, isAuthenticated, isLoading, logout, setUser, initializeAuth } = useAuthStore();
+  const loginMutation = useLoginMutation();
 
-  // Restore session on initial load
   useEffect(() => {
-    async function restoreSession() {
-      const storedToken = getStoredToken();
-      if (!storedToken) {
-        setIsLoading(false);
-        return;
-      }
+    initializeAuth();
+  }, [initializeAuth]);
 
-      try {
-        setToken(storedToken);
-        const me = await getMeApi(storedToken);
-        setUser(me);
-      } catch (err) {
-        console.warn('Session restoration failed:', err);
-        removeStoredToken();
-        setToken(null);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    restoreSession();
-  }, []);
-
-  const login = useCallback(async (phone: string, name: string): Promise<User> => {
-    setIsLoading(true);
-    try {
-      const response = await loginApi({ phone, name });
-      setStoredToken(response.token);
-      setToken(response.token);
-      setUser(response.user);
-      return response.user;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const logout = useCallback(() => {
-    removeStoredToken();
-    setToken(null);
-    setUser(null);
-    disconnectSocket();
-  }, []);
-
-  const updateUser = useCallback((updatedUser: User) => {
-    setUser(updatedUser);
-  }, []);
+  const login = async (phone: string, name: string): Promise<User> => {
+    const result = await loginMutation.mutateAsync({ phone, name });
+    return result.user;
+  };
 
   const value: AuthContextType = {
     user,
     token,
-    isLoading,
-    isAuthenticated: !!token && !!user,
+    isLoading: isLoading || loginMutation.isPending,
+    isAuthenticated,
     login,
     logout,
-    updateUser,
+    updateUser: setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

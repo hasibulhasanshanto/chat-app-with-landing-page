@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Avatar } from '@/components/ui/Avatar';
+import { useSearchUsersQuery } from '@/hooks/queries/useUserQueries';
 import { searchUsersApi } from '@/lib/api/users';
 import { SearchedUser, User } from '@/types/user';
-import { Search, Loader2, Users, Check, X, ArrowRight, AlertCircle } from 'lucide-react';
+import { Search, Loader2, Check, X, ArrowRight, AlertCircle } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 
 interface NewGroupModalProps {
@@ -24,60 +25,35 @@ export function NewGroupModal({
   const { error: toastError } = useToast();
   const [groupName, setGroupName] = useState('');
   const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchedUser[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<SearchedUser[]>([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [initialContacts, setInitialContacts] = useState<SearchedUser[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  // TanStack Query for searching contacts
+  const { data: searchResults = [], isLoading: isSearching } = useSearchUsersQuery(
+    query,
+    isOpen && query.trim().length > 0
+  );
+
+  // Initial contacts when query is empty
   useEffect(() => {
     if (!isOpen) {
       setGroupName('');
       setQuery('');
-      setSearchResults([]);
       setSelectedUsers([]);
       setValidationError(null);
       return;
     }
 
-    // Initial search to give suggestions
-    const fetchInitialUsers = async () => {
-      setIsLoadingUsers(true);
-      try {
-        const users = await searchUsersApi('a');
-        const filtered = users.filter((u) => u._id !== currentUser?._id);
-        setSearchResults(filtered);
-      } catch (err) {
-        console.error('Initial user fetch error:', err);
-      } finally {
-        setIsLoadingUsers(false);
-      }
-    };
-
-    fetchInitialUsers();
+    searchUsersApi('a')
+      .then((users) => {
+        setInitialContacts(users.filter((u) => u._id !== currentUser?._id));
+      })
+      .catch(() => {});
   }, [isOpen, currentUser]);
 
-  // Search when query changes
-  useEffect(() => {
-    if (!isOpen) return;
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    const timer = setTimeout(async () => {
-      setIsLoadingUsers(true);
-      try {
-        const users = await searchUsersApi(trimmed);
-        const filtered = users.filter((u) => u._id !== currentUser?._id);
-        setSearchResults(filtered);
-      } catch (err) {
-        console.error('Search error:', err);
-      } finally {
-        setIsLoadingUsers(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query, isOpen, currentUser]);
+  const displayedContacts = query.trim() ? searchResults : initialContacts;
 
   const toggleUserSelection = (user: SearchedUser) => {
     setValidationError(null);
@@ -106,7 +82,9 @@ export function NewGroupModal({
     }
 
     if (selectedUsers.length < 2) {
-      setValidationError('A group needs at least 3 total members (you + 2 others). Please select at least 2 participants.');
+      setValidationError(
+        'A group needs at least 3 total members (you + 2 others). Please select at least 2 participants.'
+      );
       return;
     }
 
@@ -200,17 +178,17 @@ export function NewGroupModal({
 
         {/* Search / Contact Results List */}
         <div className="max-h-48 overflow-y-auto space-y-1 border border-outline-variant/20 rounded-xl p-1 bg-surface-container-lowest">
-          {isLoadingUsers ? (
+          {isSearching ? (
             <div className="p-6 text-center text-xs text-on-surface-variant flex items-center justify-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              <span>Loading contacts...</span>
+              <span>Searching contacts...</span>
             </div>
-          ) : searchResults.length === 0 ? (
+          ) : displayedContacts.length === 0 ? (
             <div className="p-6 text-center text-xs text-on-surface-variant">
               No contacts found matching your search.
             </div>
           ) : (
-            searchResults.map((user) => {
+            displayedContacts.map((user) => {
               const isSelected = selectedUsers.some((u) => u._id === user._id);
               return (
                 <label

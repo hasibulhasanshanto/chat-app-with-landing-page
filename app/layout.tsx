@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { QueryProvider } from '@/providers/QueryProvider';
 import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketContext';
 import { ToastProvider } from '@/context/ToastContext';
@@ -31,13 +32,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-surface text-on-surface">
-        <AuthProvider>
-          <SocketProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </SocketProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <SocketProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </SocketProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

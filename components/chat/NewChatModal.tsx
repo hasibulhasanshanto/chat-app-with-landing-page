@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Avatar } from '@/components/ui/Avatar';
-import { searchUsersApi } from '@/lib/api/users';
+import { useSearchUsersQuery } from '@/hooks/queries/useUserQueries';
 import { SearchedUser, User } from '@/types/user';
 import { Search, Loader2, User as UserIcon, MessageSquare } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
@@ -23,47 +23,21 @@ export function NewChatModal({
 }: NewChatModalProps) {
   const { error: toastError } = useToast();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchedUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Search users whenever query changes (with debounce)
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery('');
-      setResults([]);
-      return;
-    }
+  // TanStack Query for searching users with debounced input
+  const { data: results = [], isLoading } = useSearchUsersQuery(query, isOpen);
 
-    const trimmed = query.trim();
-    if (!trimmed) {
-      // Try searching generic single letters to get suggestions or clear
-      setResults([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const users = await searchUsersApi(trimmed);
-        // Exclude current logged in user
-        const filtered = users.filter((u) => u._id !== currentUser?._id);
-        setResults(filtered);
-      } catch (err: any) {
-        console.error('Search error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query, isOpen, currentUser]);
+  const handleClose = () => {
+    setQuery('');
+    onClose();
+  };
 
   const handleUserClick = async (user: SearchedUser) => {
     setIsSubmitting(true);
     try {
       await onSelectUser(user._id, user);
-      onClose();
+      handleClose();
     } catch (err: any) {
       toastError(err?.message || 'Failed to start conversation');
     } finally {
@@ -74,7 +48,7 @@ export function NewChatModal({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="New Conversation"
       description="Search users by name to start a direct message"
       maxWidth="md"
