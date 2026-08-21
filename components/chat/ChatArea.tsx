@@ -348,7 +348,7 @@ export function ChatArea({
             const showDateHeader =
               index === 0 ||
               formatMessageDateGroup(sortedMessages[index - 1].createdAt) !==
-                formatMessageDateGroup(msg.createdAt);
+              formatMessageDateGroup(msg.createdAt);
 
             return (
               <React.Fragment key={msg._id || `msg-${index}`}>

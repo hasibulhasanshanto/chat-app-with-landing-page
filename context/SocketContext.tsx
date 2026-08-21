@@ -249,7 +249,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ conversationId: convId, userId: senderId, isTyping: false }),
-      }).catch(() => {});
+      }).catch(() => { });
 
       const activeId = useChatUIStore.getState().activeConversationId;
       const myId = useAuthStore.getState().user?._id;
@@ -390,7 +390,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const onNewMessage = useCallback(
     (callback: (message: Message) => void) => {
       const sock = socket || getSocket(token);
-      if (!sock) return () => {};
+      if (!sock) return () => { };
 
       sock.on('message:new', callback);
       return () => {
@@ -403,7 +403,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const onConversationUpdated = useCallback(
     (callback: (conversation: GroupConversation) => void) => {
       const sock = socket || getSocket(token);
-      if (!sock) return () => {};
+      if (!sock) return () => { };
 
       sock.on('conversation:updated', callback);
       return () => {
@@ -440,7 +440,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      }).catch(() => {});
+      }).catch(() => { });
 
       // 2. BroadcastChannel
       if (broadcastChannelRef.current) {
