@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, PlusCircle, Smile, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, Smile, Plus } from 'lucide-react';
+import { useSocket } from '@/context/SocketContext';
 
 interface MessageComposerProps {
+  conversationId?: string;
   onSendMessage: (text: string) => Promise<void>;
   placeholder?: string;
   disabled?: boolean;
@@ -12,23 +14,58 @@ interface MessageComposerProps {
 const EMOJI_LIST = ['👍', '❤️', '😊', '🎉', '🚀', '🔥', '👏', '✨', '👋', '💯'];
 
 export function MessageComposer({
+  conversationId,
   onSendMessage,
-  placeholder = 'Write a message...',
+  placeholder = 'Type a message...',
   disabled = false,
 }: MessageComposerProps) {
   const [text, setText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { emitTyping } = useSocket();
+  const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+  }, [conversationId]);
+
+  const handleStopTyping = useCallback(() => {
+    if (conversationId) {
+      emitTyping(conversationId, false);
+    }
+  }, [conversationId, emitTyping]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setText(val);
+
+    if (!conversationId) return;
+
+    if (val.trim().length > 0) {
+      emitTyping(conversationId, true);
+
+      if (typingTimerRef.current) {
+        clearTimeout(typingTimerRef.current);
+      }
+
+      typingTimerRef.current = setTimeout(() => {
+        handleStopTyping();
+      }, 2500);
+    } else {
+      handleStopTyping();
+    }
+  };
 
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const clean = text.trim();
     if (!clean || isSending || disabled) return;
+
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    handleStopTyping();
 
     setText('');
     setIsSending(true);
@@ -51,6 +88,9 @@ export function MessageComposer({
   const insertEmoji = (emoji: string) => {
     setText((prev) => prev + emoji);
     inputRef.current?.focus();
+    if (conversationId) {
+      emitTyping(conversationId, true);
+    }
   };
 
   return (
@@ -65,7 +105,7 @@ export function MessageComposer({
                 key={emoji}
                 type="button"
                 onClick={() => insertEmoji(emoji)}
-                className="w-8 h-8 flex items-center justify-center text-lg hover:bg-surface-container-high rounded-lg transition-transform hover:scale-125"
+                className="w-8 h-8 flex items-center justify-center text-lg hover:bg-surface-container-high rounded-lg transition-transform hover:scale-125 cursor-pointer"
               >
                 {emoji}
               </button>
@@ -74,36 +114,44 @@ export function MessageComposer({
         </>
       )}
 
-      {/* Composer Input Bar */}
+      {/* Composer Input Bar matching Stich design */}
       <form onSubmit={handleSend} className="w-full max-w-5xl mx-auto">
-        <div className="flex items-center gap-2 bg-surface-container-low rounded-full p-1.5 sm:p-2 pr-3 sm:pr-4 transition-all focus-within:bg-surface-container-lowest focus-within:shadow-md border border-outline-variant/20 focus-within:border-primary/40">
+        <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl p-1.5 sm:p-2 pr-2.5 sm:pr-3 transition-all focus-within:bg-surface-container-lowest focus-within:shadow-md border border-outline-variant/20 focus-within:border-primary/40">
           <button
             type="button"
-            onClick={() => setShowEmojis(!showEmojis)}
-            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors shrink-0"
-            title="Emoji"
+            className="w-8 h-8 rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+            title="Add attachment"
           >
-            <Smile className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
           </button>
 
           <input
             ref={inputRef}
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             disabled={disabled}
             placeholder={placeholder}
-            className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface placeholder:text-on-surface-variant/50 px-1"
+            className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface placeholder:text-on-surface-variant/50 px-2"
           />
+
+          <button
+            type="button"
+            onClick={() => setShowEmojis(!showEmojis)}
+            className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors shrink-0 cursor-pointer"
+            title="Emoji"
+          >
+            <Smile className="w-5 h-5" />
+          </button>
 
           <button
             type="submit"
             disabled={!text.trim() || isSending || disabled}
-            className="p-2 sm:p-2.5 bg-primary text-on-primary rounded-full shadow-sm hover:shadow-md hover:bg-primary/90 hover:brightness-105 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 shrink-0 cursor-pointer"
+            className="w-9 h-9 bg-primary text-on-primary rounded-full shadow-sm hover:shadow-md hover:bg-primary/90 hover:brightness-105 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
             title="Send Message (Enter)"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 -mr-0.5" />
           </button>
         </div>
       </form>

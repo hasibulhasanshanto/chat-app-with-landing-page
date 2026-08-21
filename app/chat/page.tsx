@@ -7,6 +7,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatUIStore } from '@/store/useChatUIStore';
 import { useToast } from '@/context/ToastContext';
+import { useSocket } from '@/context/SocketContext';
 import {
   useConversationsQuery,
   useMessagesQuery,
@@ -71,6 +72,16 @@ export default function ChatPage() {
   const promoteAdminMutation = usePromoteAdminMutation();
   const renameGroupMutation = useRenameGroupMutation();
   const queryClient = useQueryClient();
+  const { socket } = useSocket();
+
+  // Join active conversation room on socket if supported by backend
+  useEffect(() => {
+    if (socket && activeConversationId) {
+      socket.emit('join', activeConversationId);
+      socket.emit('join:room', { conversationId: activeConversationId });
+      socket.emit('conversation:join', { conversationId: activeConversationId });
+    }
+  }, [socket, activeConversationId]);
 
   // Active conversation object
   const activeConversation = conversations.find((c) => c._id === activeConversationId) || null;

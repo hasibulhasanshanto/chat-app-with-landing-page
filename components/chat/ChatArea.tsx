@@ -1,23 +1,22 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Conversation, Message } from '@/types/chat';
 import { User } from '@/types/user';
 import { Avatar } from '@/components/ui/Avatar';
 import { MessageBubble } from './MessageBubble';
 import { MessageComposer } from './MessageComposer';
-import { formatMessageDateGroup } from '@/lib/utils';
+import { formatMessageDateGroup, resolveDisplayName } from '@/lib/utils';
 import {
   Phone,
   Video,
   Info,
-  Search,
   ArrowLeft,
-  MoreVertical,
-  Circle,
+  ArrowDown,
   Loader2
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
+import { useSocket } from '@/context/SocketContext';
 
 interface ChatAreaProps {
   conversation: Conversation;
@@ -39,42 +38,127 @@ export function ChatArea({
   onBackToConversations,
 }: ChatAreaProps) {
   const { info } = useToast();
+  const { typingUsers } = useSocket();
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [unreadNewCount, setUnreadNewCount] = useState(0);
+  const prevMessagesLengthRef = useRef(messages.length);
+
   const isGroup = conversation.type === 'group';
-  const title = isGroup ? conversation.name : conversation.participant?.name || 'User';
+  const directParticipant = conversation.type === 'direct' ? conversation.participant : undefined;
+  const title = isGroup
+    ? conversation.name
+    : resolveDisplayName(directParticipant?.name, directParticipant?.phone);
+
   const statusSubtitle = isGroup
     ? `${conversation.participants?.length || 0} participants`
     : 'Online';
 
-  // Map participant IDs to names for displaying in group chat
-  const participantMap = React.useMemo(() => {
+  // Active typing users for this conversation (check both conversation ID and direct participant ID)
+  const currentTypingUsers = useMemo(() => {
+    const list1 = typingUsers[conversation._id] || [];
+    const list2 = directParticipant?._id ? typingUsers[directParticipant._id] || [] : [];
+    const combined = [...list1, ...list2];
+    return combined.filter(
+      (user, index, self) => index === self.findIndex((u) => u.userId === user.userId)
+    );
+  }, [typingUsers, conversation._id, directParticipant?._id]);
+
+  // Map participant IDs to names for displaying in group and direct chat
+  const participantMap = useMemo(() => {
     const map = new Map<string, string>();
     if (isGroup && conversation.participants) {
       conversation.participants.forEach((p) => {
-        map.set(p._id, p.name);
+        map.set(p._id, resolveDisplayName(p.name, p.phone));
       });
+    } else if (directParticipant) {
+      map.set(directParticipant._id, resolveDisplayName(directParticipant.name, directParticipant.phone));
     }
     if (currentUser) {
       map.set(currentUser._id, currentUser.name);
+      map.set('me', currentUser.name);
     }
     return map;
-  }, [isGroup, conversation, currentUser]);
+  }, [isGroup, conversation, directParticipant, currentUser]);
 
   // Guarantee chronological order: oldest at top, newest at bottom
-  const sortedMessages = React.useMemo(() => {
+  const sortedMessages = useMemo(() => {
     return [...messages].sort(
       (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
   }, [messages]);
 
-  // Scroll to bottom on messages change
+  // Scroll to bottom smoothly
+  const scrollToBottom = useCallback((smooth = true) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: smooth ? 'smooth' : 'auto',
+        block: 'end',
+      });
+    }
+    setIsAtBottom(true);
+    setUnreadNewCount(0);
+  }, []);
+
+  // Monitor scroll position
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const atBottom = distanceFromBottom < 100;
+
+    setIsAtBottom(atBottom);
+    if (atBottom) {
+      setUnreadNewCount(0);
+    }
+  }, []);
+
+  // Reset scroll & unread count when switching conversations
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [sortedMessages.length]);
+    setUnreadNewCount(0);
+    setIsAtBottom(true);
+    prevMessagesLengthRef.current = messages.length;
+    setTimeout(() => {
+      scrollToBottom(false);
+    }, 50);
+  }, [conversation._id, scrollToBottom]);
+
+  // Handle incoming new messages
+  useEffect(() => {
+    const currentLen = sortedMessages.length;
+    const prevLen = prevMessagesLengthRef.current;
+
+    if (currentLen > prevLen) {
+      const newMessagesDiff = currentLen - prevLen;
+      const lastMsg = sortedMessages[currentLen - 1];
+      const isSentByMe =
+        lastMsg?.sender === currentUser?._id ||
+        lastMsg?.sender === (currentUser as any)?.id ||
+        lastMsg?.sender === 'me' ||
+        lastMsg?.isOptimistic;
+
+      if (isSentByMe || isAtBottom) {
+        scrollToBottom(true);
+      } else {
+        setUnreadNewCount((prev) => prev + newMessagesDiff);
+      }
+    }
+
+    prevMessagesLengthRef.current = currentLen;
+  }, [sortedMessages, isAtBottom, currentUser, scrollToBottom]);
+
+  // Scroll down if typing indicator appears while at bottom
+  useEffect(() => {
+    if (currentTypingUsers.length > 0 && isAtBottom) {
+      scrollToBottom(true);
+    }
+  }, [currentTypingUsers.length, isAtBottom, scrollToBottom]);
 
   return (
-    <div className="flex-1 h-full flex flex-col bg-surface overflow-hidden relative">
+    <div className="flex-1 h-full flex flex-col bg-surface overflow-hidden relative select-none">
       {/* Chat Header matching Stich design */}
       <header className="h-16 px-4 md:px-6 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-3 min-w-0">
@@ -83,7 +167,7 @@ export function ChatArea({
             <button
               type="button"
               onClick={onBackToConversations}
-              className="md:hidden p-1.5 -ml-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"
+              className="md:hidden p-1.5 -ml-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer"
               title="Back to inbox"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -105,7 +189,11 @@ export function ChatArea({
               {!isGroup && (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" />
               )}
-              <span className="truncate">{statusSubtitle}</span>
+              <span className="truncate">
+                {currentTypingUsers.length > 0
+                  ? `${currentTypingUsers[0]?.name || 'Someone'} is typing...`
+                  : statusSubtitle}
+              </span>
             </div>
           </div>
         </div>
@@ -115,7 +203,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={() => info('Starting video call')}
-            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors"
+            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors cursor-pointer"
             title="Video call"
           >
             <Video className="w-5 h-5" />
@@ -123,7 +211,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={() => info('Starting voice call')}
-            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors"
+            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors cursor-pointer"
             title="Voice call"
           >
             <Phone className="w-5 h-5" />
@@ -131,7 +219,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={onToggleDetails}
-            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors"
+            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors cursor-pointer"
             title="Conversation Details"
           >
             <Info className="w-5 h-5" />
@@ -139,8 +227,12 @@ export function ChatArea({
         </div>
       </header>
 
-      {/* Messages Stream */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col gap-4">
+      {/* Messages Stream Scroll Container */}
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col gap-4 relative"
+      >
         {isLoadingMessages ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
@@ -165,7 +257,10 @@ export function ChatArea({
               msg.sender === (currentUser as any)?.id ||
               msg.sender === 'me';
 
-            const senderName = isMe ? 'You' : participantMap.get(msg.sender) || 'Member';
+            // Resolve exact user name for the 2-letter avatar initials (e.g. Rafi Ahmed -> RA)
+            const senderName = isMe
+              ? (currentUser?.name || 'You')
+              : (participantMap.get(msg.sender) || title);
 
             const showDateHeader =
               index === 0 ||
@@ -193,11 +288,46 @@ export function ChatArea({
           })
         )}
 
-        <div ref={messagesEndRef} />
+        {/* Real-time Messenger / Stich-design 3-Dots Typing Indicator matching user screenshot */}
+        {currentTypingUsers.length > 0 && (
+          <div className="flex items-end gap-2 max-w-[85%] mt-1 animate-in fade-in slide-in-from-bottom-2 duration-150">
+            <Avatar
+              name={currentTypingUsers[0]?.name || title}
+              size="sm"
+              className="mb-0.5"
+            />
+            <div className="bg-surface-container-low text-on-surface rounded-2xl rounded-bl-xs px-3.5 py-2.5 shadow-xs flex items-center gap-1.5 w-14 h-9">
+              <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce" />
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} className="h-2 shrink-0" />
       </div>
+
+      {/* Floating "New Messages" / Scroll-to-Bottom Pill Button matching Stich Screenshot */}
+      {(!isAtBottom || unreadNewCount > 0) && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 animate-in fade-in zoom-in-95 duration-150">
+          <button
+            type="button"
+            onClick={() => scrollToBottom(true)}
+            className="bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer border border-on-secondary-container/10"
+          >
+            <ArrowDown className="w-4 h-4" />
+            <span>
+              {unreadNewCount > 0
+                ? `${unreadNewCount} New Message${unreadNewCount > 1 ? 's' : ''}`
+                : 'Scroll to bottom'}
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Message Composer */}
       <MessageComposer
+        conversationId={conversation._id}
         onSendMessage={onSendMessage}
         placeholder={`Message ${title}...`}
         disabled={isLoadingMessages}

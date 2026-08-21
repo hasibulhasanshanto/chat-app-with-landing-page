@@ -5,9 +5,37 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Known demo accounts phone map to ensure consistent names
+export const KNOWN_USERS_BY_PHONE: Record<string, string> = {
+  '+8801712345678': 'Rafi Ahmed',
+  '8801712345678': 'Rafi Ahmed',
+  '01712345678': 'Rafi Ahmed',
+  '+15550192834': 'Sarah Ahmed',
+  '15550192834': 'Sarah Ahmed',
+  '5550192834': 'Sarah Ahmed',
+  '+15551111111': 'Ada Lovelace',
+  '15551111111': 'Ada Lovelace',
+  '5551111111': 'Ada Lovelace',
+};
+
+export function resolveDisplayName(name?: string, phone?: string): string {
+  if (phone && KNOWN_USERS_BY_PHONE[phone]) {
+    // If name was overwritten with 'test' or blank, use known canonical name
+    if (!name || name.toLowerCase() === 'test' || name.toLowerCase() === 'user') {
+      return KNOWN_USERS_BY_PHONE[phone];
+    }
+  }
+  return name || 'User';
+}
+
 export function getInitials(name?: string): string {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
+  if (!name) return "??";
+  const clean = name.trim();
+  if (!clean || clean.toLowerCase() === 'me' || clean.toLowerCase() === 'you') {
+    return "??";
+  }
+
+  const parts = clean.split(/\s+/).filter(Boolean);
   if (parts.length === 1) {
     return parts[0].substring(0, 2).toUpperCase();
   }

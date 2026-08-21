@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Conversation } from '@/types/chat';
 import { User } from '@/types/user';
 import { Avatar } from '@/components/ui/Avatar';
-import { formatConversationDate } from '@/lib/utils';
+import { formatConversationDate, resolveDisplayName } from '@/lib/utils';
 import { Search, Users, MessageSquarePlus, UserPlus } from 'lucide-react';
 
 interface ConversationListProps {
@@ -37,7 +37,7 @@ export function ConversationList({
       const title =
         conv.type === 'group'
           ? conv.name
-          : conv.participant?.name || 'Unknown User';
+          : resolveDisplayName(conv.participant?.name, conv.participant?.phone);
 
       const lastText = conv.lastMessage?.text || '';
       return title.toLowerCase().includes(query) || lastText.toLowerCase().includes(query);
@@ -124,7 +124,9 @@ export function ConversationList({
           filteredConversations.map((conv) => {
             const isSelected = conv._id === activeConversationId;
             const isGroup = conv.type === 'group';
-            const title = isGroup ? conv.name : conv.participant?.name || 'Direct Chat';
+            const title = isGroup
+              ? conv.name
+              : resolveDisplayName(conv.participant?.name, conv.participant?.phone);
             const dateStr = formatConversationDate(conv.lastMessage?.createdAt || conv.updatedAt);
             const lastText = conv.lastMessage?.text || 'No messages yet';
             const unreadCount = conv.unreadCount || 0;
