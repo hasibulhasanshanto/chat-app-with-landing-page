@@ -5,7 +5,7 @@ import { Conversation } from '@/types/chat';
 import { User } from '@/types/user';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatConversationDate } from '@/lib/utils';
-import { Search, Plus, Users, MessageSquarePlus, UserPlus } from 'lucide-react';
+import { Search, Users, MessageSquarePlus, UserPlus } from 'lucide-react';
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -54,7 +54,7 @@ export function ConversationList({
             <button
               type="button"
               onClick={onOpenNewChat}
-              className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary/90 transition-all shadow-sm active:scale-95"
+              className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary/90 transition-all shadow-sm active:scale-95 cursor-pointer"
               title="Start New Direct Chat"
             >
               <UserPlus className="w-4 h-4" />
@@ -62,7 +62,7 @@ export function ConversationList({
             <button
               type="button"
               onClick={onOpenNewGroup}
-              className="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-all shadow-sm active:scale-95"
+              className="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-all shadow-sm active:scale-95 cursor-pointer"
               title="Create New Group"
             >
               <Users className="w-4 h-4" />
@@ -114,7 +114,7 @@ export function ConversationList({
               <button
                 type="button"
                 onClick={onOpenNewChat}
-                className="text-xs font-semibold bg-primary text-on-primary px-3.5 py-1.5 rounded-lg shadow-sm hover:bg-primary/90 transition-all"
+                className="text-xs font-semibold bg-primary text-on-primary px-3.5 py-1.5 rounded-lg shadow-sm hover:bg-primary/90 transition-all cursor-pointer"
               >
                 + New Chat
               </button>
@@ -127,15 +127,19 @@ export function ConversationList({
             const title = isGroup ? conv.name : conv.participant?.name || 'Direct Chat';
             const dateStr = formatConversationDate(conv.lastMessage?.createdAt || conv.updatedAt);
             const lastText = conv.lastMessage?.text || 'No messages yet';
+            const unreadCount = conv.unreadCount || 0;
+            const hasUnread = unreadCount > 0 && !isSelected;
 
             return (
               <button
                 key={conv._id}
                 type="button"
                 onClick={() => onSelectConversation(conv)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all relative text-left group ${
+                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all relative text-left group cursor-pointer ${
                   isSelected
                     ? 'bg-secondary-container text-on-secondary-container shadow-sm'
+                    : hasUnread
+                    ? 'bg-surface-container-lowest hover:bg-surface-container-high shadow-xs'
                     : 'hover:bg-surface-container-high/80 text-on-surface'
                 }`}
               >
@@ -156,15 +160,23 @@ export function ConversationList({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
                     <span
-                      className={`text-xs font-bold truncate ${
-                        isSelected ? 'text-on-secondary-container' : 'text-on-surface'
+                      className={`text-xs truncate ${
+                        isSelected
+                          ? 'text-on-secondary-container font-bold'
+                          : hasUnread
+                          ? 'text-on-surface font-extrabold'
+                          : 'text-on-surface font-bold'
                       }`}
                     >
                       {title}
                     </span>
                     <span
                       className={`text-[10px] shrink-0 font-medium ${
-                        isSelected ? 'text-on-secondary-container/80' : 'text-on-surface-variant'
+                        isSelected
+                          ? 'text-on-secondary-container/80'
+                          : hasUnread
+                          ? 'text-primary font-bold'
+                          : 'text-on-surface-variant'
                       }`}
                     >
                       {dateStr}
@@ -175,12 +187,21 @@ export function ConversationList({
                     className={`text-xs truncate ${
                       isSelected
                         ? 'text-on-secondary-container/90'
+                        : hasUnread
+                        ? 'text-on-surface font-semibold'
                         : 'text-on-surface-variant'
                     }`}
                   >
                     {lastText}
                   </p>
                 </div>
+
+                {/* Unread Badge Count matching Stich design */}
+                {hasUnread && (
+                  <div className="w-5 h-5 rounded-full bg-primary text-on-primary text-[11px] font-bold flex items-center justify-center shrink-0 ml-1 shadow-sm animate-in zoom-in-75 duration-150">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </div>
+                )}
               </button>
             );
           })

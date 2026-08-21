@@ -2,6 +2,8 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryKeys';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatUIStore } from '@/store/useChatUIStore';
 import { useToast } from '@/context/ToastContext';
@@ -73,12 +75,7 @@ export default function ChatPage() {
   // Connect Socket.io real-time updates directly to TanStack Query cache
   useRealtimeSocketSync(activeConversationId);
 
-  // Redirect if unauthenticated
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
-      router.replace('/login');
-    }
-  }, [isAuthLoading, isAuthenticated, router]);
+  const queryClient = useQueryClient();
 
   // Active conversation object
   const activeConversation = conversations.find((c) => c._id === activeConversationId) || null;
@@ -86,6 +83,11 @@ export default function ChatPage() {
   // Handlers
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConversationId(conv._id);
+    // Clear unread count for the opened conversation
+    queryClient.setQueryData<Conversation[]>(
+      queryKeys.conversations.list(),
+      (old = []) => old.map((c) => (c._id === conv._id ? { ...c, unreadCount: 0 } : c))
+    );
   };
 
   const handleSendMessage = async (text: string) => {
@@ -179,17 +181,6 @@ export default function ChatPage() {
       toastError(err?.message || 'Failed to leave group');
     }
   };
-
-  if (isAuthLoading) {
-    return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-surface gap-3">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        <span className="text-sm font-semibold text-on-surface-variant">
-          Connecting to ChatFlow...
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-surface text-on-surface font-sans">

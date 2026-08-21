@@ -61,10 +61,17 @@ export function ChatArea({
     return map;
   }, [isGroup, conversation, currentUser]);
 
+  // Guarantee chronological order: oldest at top, newest at bottom
+  const sortedMessages = React.useMemo(() => {
+    return [...messages].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [messages]);
+
   // Scroll to bottom on messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [sortedMessages.length]);
 
   return (
     <div className="flex-1 h-full flex flex-col bg-surface overflow-hidden relative">
@@ -139,7 +146,7 @@ export function ChatArea({
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <span className="text-xs text-on-surface-variant font-medium">Loading messages...</span>
           </div>
-        ) : messages.length === 0 ? (
+        ) : sortedMessages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-on-surface-variant">
             <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-3">
               <Avatar name={title} isGroup={isGroup} size="md" />
@@ -152,7 +159,7 @@ export function ChatArea({
             </p>
           </div>
         ) : (
-          messages.map((msg, index) => {
+          sortedMessages.map((msg, index) => {
             const isMe =
               msg.sender === currentUser?._id ||
               msg.sender === (currentUser as any)?.id ||
@@ -162,7 +169,7 @@ export function ChatArea({
 
             const showDateHeader =
               index === 0 ||
-              formatMessageDateGroup(messages[index - 1].createdAt) !==
+              formatMessageDateGroup(sortedMessages[index - 1].createdAt) !==
                 formatMessageDateGroup(msg.createdAt);
 
             return (

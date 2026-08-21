@@ -9,6 +9,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrated: boolean;
 
   setAuth: (user: User, token: string) => void;
   setUser: (user: User) => void;
@@ -20,7 +21,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: true,
+  isLoading: false,
+  isHydrated: false,
 
   setAuth: (user: User, token: string) => {
     setAuthToken(token);
@@ -29,6 +31,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       token,
       isAuthenticated: true,
       isLoading: false,
+      isHydrated: true,
     });
   },
 
@@ -44,15 +47,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       token: null,
       isAuthenticated: false,
       isLoading: false,
+      isHydrated: true,
     });
   },
 
   initializeAuth: async () => {
     const token = getAuthToken();
     if (!token) {
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      set({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isHydrated: true,
+      });
       return;
     }
+
+    // Set token & authenticated state
+    set({
+      token,
+      isAuthenticated: true,
+      isLoading: !get().user,
+      isHydrated: true,
+    });
 
     try {
       const user = await getMeApi(token);
@@ -61,16 +79,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         token,
         isAuthenticated: true,
         isLoading: false,
+        isHydrated: true,
       });
     } catch (error) {
-      console.warn('Session verification failed, clearing auth cookie:', error);
+      console.warn('Session verification failed, clearing auth state:', error);
       removeAuthToken();
       set({
         user: null,
         token: null,
         isAuthenticated: false,
         isLoading: false,
+        isHydrated: true,
       });
+      disconnectSocket();
     }
   },
 }));

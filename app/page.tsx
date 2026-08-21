@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 
+import { useMounted } from '@/hooks/useMounted';
+
 const DEMO_PREVIEWS = [
   {
     id: 'sarah',
@@ -64,6 +66,7 @@ const DEMO_PREVIEWS = [
 ];
 
 export default function LandingPage() {
+  const mounted = useMounted();
   const { isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState(DEMO_PREVIEWS[0]);
   const [interactiveMessages, setInteractiveMessages] = useState(DEMO_PREVIEWS[0].messages);
@@ -128,7 +131,7 @@ export default function LandingPage() {
 
           {/* Right Action */}
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
+            {mounted && isAuthenticated ? (
               <Link
                 href="/chat"
                 className="inline-flex items-center gap-2 bg-primary text-on-primary text-sm font-semibold px-4 py-2.5 rounded-xl shadow-md hover:bg-primary/90 hover:shadow-lg transition-all"

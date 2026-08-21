@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { Socket } from 'socket.io-client';
-import { useAuth } from './AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import { getSocket } from '@/lib/socket';
 import { Message, GroupConversation } from '@/types/chat';
 
@@ -17,12 +17,13 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 export function SocketProvider({ children }: { children: ReactNode }) {
-  const { token, isAuthenticated } = useAuth();
+  const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
+    if (!token && !isAuthenticated) {
       if (socket) {
         socket.disconnect();
         setSocket(null);
@@ -37,15 +38,17 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     setSocket(sock);
 
     const handleConnect = () => {
+      console.log('⚡ Socket connected successfully:', sock.id);
       setIsConnected(true);
     };
 
-    const handleDisconnect = () => {
+    const handleDisconnect = (reason: string) => {
+      console.log('🔌 Socket disconnected:', reason);
       setIsConnected(false);
     };
 
     const handleConnectError = (error: any) => {
-      console.warn('Socket connection error:', error?.message || error);
+      console.warn('⚠️ Socket connection error:', error?.message || error);
       setIsConnected(false);
     };
 
@@ -62,37 +65,42 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       sock.off('disconnect', handleDisconnect);
       sock.off('connect_error', handleConnectError);
     };
-  }, [isAuthenticated, token]);
+  }, [token, isAuthenticated]);
 
   const onNewMessage = useCallback(
     (callback: (message: Message) => void) => {
-      if (!socket) return () => {};
-      socket.on('message:new', callback);
+      const sock = socket || getSocket(token);
+      if (!sock) return () => {};
+
+      sock.on('message:new', callback);
       return () => {
-        socket.off('message:new', callback);
+        sock.off('message:new', callback);
       };
     },
-    [socket]
+    [socket, token]
   );
 
   const onConversationUpdated = useCallback(
     (callback: (conversation: GroupConversation) => void) => {
-      if (!socket) return () => {};
-      socket.on('conversation:updated', callback);
+      const sock = socket || getSocket(token);
+      if (!sock) return () => {};
+
+      sock.on('conversation:updated', callback);
       return () => {
-        socket.off('conversation:updated', callback);
+        sock.off('conversation:updated', callback);
       };
     },
-    [socket]
+    [socket, token]
   );
 
   const emitSendMessage = useCallback(
     (conversationId: string, text: string) => {
-      if (socket && isConnected) {
-        socket.emit('message:send', { conversationId, text });
+      const sock = socket || getSocket(token);
+      if (sock && sock.connected) {
+        sock.emit('message:send', { conversationId, text });
       }
     },
-    [socket, isConnected]
+    [socket, token]
   );
 
   const value: SocketContextType = {
