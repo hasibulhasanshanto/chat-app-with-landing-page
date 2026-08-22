@@ -1,7 +1,13 @@
 import { io, Socket } from 'socket.io-client';
 import { getAuthToken } from '@/lib/cookies';
 
-const SOCKET_SERVER_URL = 'https://frontend-task-chatapp.onrender.com';
+const DEFAULT_SOCKET_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL || 'https://frontend-task-chatapp.onrender.com';
+export const SOCKET_SERVER_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL ||
+  (process.env.NEXT_PUBLIC_API_BASE_URL
+    ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/api\/?$/, '')
+    : DEFAULT_SOCKET_URL);
 
 let socketInstance: Socket | null = null;
 let registeredToken: string | null = null;
