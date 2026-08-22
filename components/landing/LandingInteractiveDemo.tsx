@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Send, CheckCheck, Circle } from 'lucide-react';
+import { Send, CheckCheck, Circle, Smile, Plus, Phone, Video } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
+
+const EMOJI_LIST = ['👍', '❤️', '😊', '🎉', '🚀', '🔥', '👏', '✨', '👋', '💯'];
 
 const DEMO_PREVIEWS = [
   {
@@ -50,36 +52,94 @@ export function LandingInteractiveDemo() {
   const [activeTab, setActiveTab] = useState(DEMO_PREVIEWS[0]);
   const [interactiveMessages, setInteractiveMessages] = useState(DEMO_PREVIEWS[0].messages);
   const [inputText, setInputText] = useState('');
+  const [showEmojis, setShowEmojis] = useState(false);
+  const [isTypingReply, setIsTypingReply] = useState(false);
 
-  const handleSelectTab = (item: typeof DEMO_PREVIEWS[0]) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-scroll the inner container ONLY. NEVER use scrollIntoView which causes window scrolling!
+  const scrollInnerChatToBottom = useCallback((smooth = true) => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      if (smooth) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollInnerChatToBottom(true);
+  }, [interactiveMessages, isTypingReply, scrollInnerChatToBottom]);
+
+  const handleSelectTab = (e: React.MouseEvent, item: typeof DEMO_PREVIEWS[0]) => {
+    e.preventDefault();
     setActiveTab(item);
     setInteractiveMessages(item.messages);
+    setIsTypingReply(false);
+    setShowEmojis(false);
+    setInputText('');
+    setTimeout(() => scrollInnerChatToBottom(false), 20);
   };
 
-  const handleSendMock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputText.trim()) return;
+  const insertEmoji = (emoji: string) => {
+    setInputText((prev) => prev + emoji);
+    inputRef.current?.focus({ preventScroll: true });
+  };
+
+  const handleSendMock = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = inputText.trim();
+    if (!clean) return;
+
     const newMsg = {
       id: Date.now(),
       sender: 'me',
-      text: inputText.trim(),
-      time: 'Just now',
+      text: clean,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
+
     setInteractiveMessages((prev) => [...prev, newMsg]);
     setInputText('');
+    setShowEmojis(false);
 
-    // Auto simulated response
+    // Simulate realistic typing delay then reply
     setTimeout(() => {
+      setIsTypingReply(true);
+    }, 400);
+
+    setTimeout(() => {
+      setIsTypingReply(false);
+      const automatedReplies = [
+        `Got it! Ready whenever you are 👍`,
+        `That sounds fantastic! Let's ship it 🚀`,
+        `Awesome work! The real-time sync feels super smooth ✨`,
+        `Received! Checking this right away 😊`,
+      ];
+      const randomReply = automatedReplies[Math.floor(Math.random() * automatedReplies.length)];
+
       setInteractiveMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           sender: activeTab.name,
-          text: `Got it! Ready whenever you are 👍`,
-          time: 'Just now',
+          text: randomReply,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
-    }, 1000);
+    }, 1400);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMock();
+    }
   };
 
   return (
@@ -98,7 +158,7 @@ export function LandingInteractiveDemo() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
               <Circle className="w-2 h-2 fill-emerald-500 text-emerald-500" />
-              Live Sandbox
+              Live Interactive Sandbox
             </span>
             <Link
               href="/login"
@@ -110,14 +170,14 @@ export function LandingInteractiveDemo() {
         </div>
 
         {/* Chat App Mockup Body */}
-        <div className="grid grid-cols-1 md:grid-cols-12 h-[520px]">
+        <div className="grid grid-cols-1 md:grid-cols-12 h-[540px]">
           {/* Left Sidebar in preview */}
           <div className="hidden md:flex md:col-span-4 bg-surface-container-low border-r border-outline-variant/30 flex-col">
             <div className="p-4 border-b border-outline-variant/30">
-              <div className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
                 Recent Chats
               </div>
-              <div className="text-xs text-on-surface-variant/80">Click a contact to test</div>
+              <div className="text-[11px] text-on-surface-variant/70">Click to switch demo conversation</div>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
               {DEMO_PREVIEWS.map((item) => {
@@ -125,7 +185,8 @@ export function LandingInteractiveDemo() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleSelectTab(item)}
+                    type="button"
+                    onClick={(e) => handleSelectTab(e, item)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left cursor-pointer ${
                       isSelected
                         ? 'bg-secondary-container text-on-secondary-container shadow-sm'
@@ -155,10 +216,10 @@ export function LandingInteractiveDemo() {
           </div>
 
           {/* Main Chat Stream in preview */}
-          <div className="col-span-12 md:col-span-8 flex flex-col bg-surface">
-            {/* Chat Header */}
-            <div className="h-14 px-5 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+          <div className="col-span-12 md:col-span-8 flex flex-col bg-surface overflow-hidden relative">
+            {/* Chat Header matching Stich design */}
+            <div className="h-14 px-4 sm:px-5 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between shrink-0 z-10">
+              <div className="flex items-center gap-3 min-w-0">
                 <Avatar
                   name={activeTab.name}
                   src={activeTab.avatar}
@@ -166,14 +227,14 @@ export function LandingInteractiveDemo() {
                   isGroup={activeTab.isGroup}
                   size="sm"
                 />
-                <div>
-                  <div className="text-sm font-bold text-on-surface leading-none">
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-on-surface leading-tight truncate">
                     {activeTab.name}
                   </div>
                   <div className="text-[10px] text-on-surface-variant mt-0.5 flex items-center gap-1">
                     {activeTab.online ? (
                       <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
                         <span>Online</span>
                       </>
                     ) : (
@@ -183,18 +244,38 @@ export function LandingInteractiveDemo() {
                 </div>
               </div>
 
-              <Link
-                href="/login"
-                className="text-xs font-medium bg-primary-fixed text-on-primary-fixed-variant px-3 py-1.5 rounded-lg hover:bg-primary-fixed-dim transition-colors"
-              >
-                Login to Chat Live
-              </Link>
+              {/* Action Icons in header */}
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button
+                  type="button"
+                  className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
+                  title="Video Call"
+                >
+                  <Video className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
+                  title="Voice Call"
+                >
+                  <Phone className="w-4 h-4" />
+                </button>
+                <Link
+                  href="/login"
+                  className="text-xs font-semibold bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary/90 transition-all shadow-xs ml-1"
+                >
+                  Log In
+                </Link>
+              </div>
             </div>
 
-            {/* Message Stream */}
-            <div className="flex-1 p-5 overflow-y-auto space-y-4">
-              <div className="flex justify-center">
-                <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant/70 bg-surface-container px-2.5 py-1 rounded-full">
+            {/* Scrollable Message Stream */}
+            <div
+              ref={scrollContainerRef}
+              className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3.5 relative"
+            >
+              <div className="flex justify-center my-1">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant/70 bg-surface-container px-2.5 py-1 rounded-full shadow-xs">
                   Today
                 </span>
               </div>
@@ -204,7 +285,7 @@ export function LandingInteractiveDemo() {
                 return (
                   <div
                     key={msg.id}
-                    className={`flex flex-col max-w-[80%] ${
+                    className={`flex flex-col max-w-[82%] animate-in fade-in slide-in-from-bottom-1 duration-150 ${
                       isMe ? 'ml-auto items-end' : 'mr-auto items-start'
                     }`}
                   >
@@ -214,10 +295,10 @@ export function LandingInteractiveDemo() {
                       </span>
                     )}
                     <div
-                      className={`p-3 text-xs leading-relaxed shadow-sm ${
+                      className={`p-3 text-xs leading-relaxed shadow-xs ${
                         isMe
-                          ? 'bg-primary text-on-primary rounded-2xl rounded-br-sm'
-                          : 'bg-surface-container-high text-on-surface rounded-2xl rounded-bl-sm'
+                          ? 'bg-primary text-on-primary rounded-2xl rounded-br-xs'
+                          : 'bg-surface-container-high text-on-surface rounded-2xl rounded-bl-xs'
                       }`}
                     >
                       {msg.text}
@@ -229,29 +310,87 @@ export function LandingInteractiveDemo() {
                   </div>
                 );
               })}
+
+              {/* 3-Dots Animated Typing Indicator */}
+              {isTypingReply && (
+                <div className="flex items-end gap-2 max-w-[85%] mt-1 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                  <Avatar
+                    name={activeTab.name}
+                    src={activeTab.avatar}
+                    size="sm"
+                    className="mb-0.5"
+                  />
+                  <div className="bg-surface-container-high text-on-surface rounded-2xl rounded-bl-xs px-3.5 py-2.5 shadow-xs flex items-center gap-1.5 w-14 h-8">
+                    <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-on-surface-variant/80 rounded-full animate-bounce" />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Chat Input */}
-            <form
-              onSubmit={handleSendMock}
-              className="p-3 bg-surface-container-lowest border-t border-outline-variant/30 flex items-center gap-2"
-            >
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder={`Message ${activeTab.name}... (Press Enter)`}
-                className="flex-1 bg-surface-container-low text-xs rounded-xl py-2.5 px-3.5 text-on-surface border border-outline-variant/20 focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <button
-                type="submit"
-                disabled={!inputText.trim()}
-                className="w-9 h-9 bg-primary text-on-primary rounded-xl flex items-center justify-center hover:bg-primary/90 disabled:opacity-40 transition-all cursor-pointer"
-                title="Send simulated message"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
+            {/* Message Composer with Emoji Popover matching Chat App */}
+            <div className="p-3 bg-surface-container-lowest border-t border-outline-variant/30 relative z-20">
+              {/* Emoji Picker Popover */}
+              {showEmojis && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setShowEmojis(false)} />
+                  <div className="absolute bottom-full left-4 mb-2 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl p-2 z-40 flex items-center gap-1 animate-in fade-in zoom-in-95 duration-150">
+                    {EMOJI_LIST.map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => insertEmoji(emoji)}
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg hover:bg-surface-container-high rounded-lg transition-transform hover:scale-125 cursor-pointer"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <form onSubmit={handleSendMock} className="w-full">
+                <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl p-1.5 sm:p-2 pr-2 sm:pr-2.5 transition-all focus-within:bg-surface-container-lowest focus-within:shadow-md border border-outline-variant/20 focus-within:border-primary/40">
+                  <button
+                    type="button"
+                    onClick={() => insertEmoji('📎')}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                    title="Add attachment / emoji"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={`Message ${activeTab.name}... (Press Enter)`}
+                    className="flex-1 bg-transparent border-none focus:outline-none text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/50 px-1"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojis(!showEmojis)}
+                    className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors shrink-0 cursor-pointer"
+                    title="Emoji picker"
+                  >
+                    <Smile className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={!inputText.trim()}
+                    className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-on-primary rounded-full shadow-xs hover:shadow-md hover:bg-primary/90 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
+                    title="Send message"
+                  >
+                    <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 -mr-0.5" />
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
