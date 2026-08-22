@@ -37,6 +37,10 @@ export function getSocket(providedToken?: string | null): Socket | null {
   registeredToken = token;
   socketInstance = io(SOCKET_SERVER_URL, {
     auth: { token },
+    extraHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+    query: { token },
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionAttempts: Infinity,

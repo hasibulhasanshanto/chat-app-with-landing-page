@@ -86,6 +86,7 @@ export default function ChatPage() {
       socket.emit('join', activeConversationId);
       socket.emit('join:room', { conversationId: activeConversationId });
       socket.emit('conversation:join', { conversationId: activeConversationId });
+      socket.emit('joinConversation', activeConversationId);
     }
   }, [socket, activeConversationId]);
 

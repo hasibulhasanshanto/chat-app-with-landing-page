@@ -154,12 +154,22 @@ export function ChatArea({
     prevScrollHeightRef.current = 0;
     isFetchingOlderRef.current = false;
     newestMsgIdRef.current = null;
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       scrollToBottom(false);
-    }, 50);
+    }, 60);
+    return () => clearTimeout(timer);
   }, [conversation._id, scrollToBottom]);
 
-  // Handle incoming new messages (only scroll to bottom if a genuinely NEW message was appended at the end)
+  // Scroll to bottom when messages initially finish loading
+  const prevLoadingRef = useRef(isLoadingMessages);
+  useEffect(() => {
+    if (prevLoadingRef.current && !isLoadingMessages && sortedMessages.length > 0) {
+      scrollToBottom(false);
+    }
+    prevLoadingRef.current = isLoadingMessages;
+  }, [isLoadingMessages, sortedMessages.length, scrollToBottom]);
+
+  // Handle incoming new messages
   useEffect(() => {
     const currentLen = sortedMessages.length;
     if (currentLen === 0) {
@@ -179,9 +189,8 @@ export function ChatArea({
     // Skip if we're in the middle of fetching older messages
     if (isFetchingOlderRef.current) return;
 
-    // Only auto-scroll if the newest message ID actually changed (a new message was appended, not old ones prepended)
-    if (currentLen > prevLen && currentNewestId && currentNewestId !== prevNewestId) {
-      const newMessagesDiff = currentLen - prevLen;
+    // Trigger scroll / unread counter if newest message changed or message count increased
+    if ((currentLen > prevLen || (currentNewestId && currentNewestId !== prevNewestId)) && currentNewestId) {
       const lastMsg = sortedMessages[currentLen - 1];
       const isSentByMe =
         lastMsg?.sender === currentUser?._id ||
@@ -192,6 +201,7 @@ export function ChatArea({
       if (isSentByMe || isAtBottom) {
         scrollToBottom(true);
       } else {
+        const newMessagesDiff = Math.max(1, currentLen - prevLen);
         setUnreadNewCount((prev) => prev + newMessagesDiff);
       }
     }

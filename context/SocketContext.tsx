@@ -28,10 +28,14 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 function extractConversationId(payload: any): string {
   if (!payload) return '';
+  if (typeof payload === 'string') return payload;
   if (typeof payload.conversation === 'string') return payload.conversation;
   if (typeof payload.conversation === 'object' && payload.conversation?._id) return payload.conversation._id;
+  if (typeof payload.conversation === 'object' && payload.conversation?.id) return payload.conversation.id;
   if (typeof payload.conversationId === 'string') return payload.conversationId;
   if (typeof payload.conversationId === 'object' && payload.conversationId?._id) return payload.conversationId._id;
+  if (typeof payload.conversationId === 'object' && payload.conversationId?.id) return payload.conversationId.id;
+  if (typeof payload.conversation_id === 'string') return payload.conversation_id;
   if (typeof payload.roomId === 'string') return payload.roomId;
   return '';
 }
@@ -40,8 +44,10 @@ function extractSenderId(payload: any): string {
   if (!payload) return '';
   if (typeof payload.sender === 'string') return payload.sender;
   if (typeof payload.sender === 'object' && payload.sender?._id) return payload.sender._id;
+  if (typeof payload.sender === 'object' && payload.sender?.id) return payload.sender.id;
   if (typeof payload.senderId === 'string') return payload.senderId;
   if (typeof payload.senderId === 'object' && payload.senderId?._id) return payload.senderId._id;
+  if (typeof payload.senderId === 'object' && payload.senderId?.id) return payload.senderId.id;
   if (typeof payload.userId === 'string') return payload.userId;
   return '';
 }
@@ -171,6 +177,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
           const data = event.data;
           if (data && data.type === 'typing') {
             handleTypingEvent(data);
+          } else if (data && (data.type === 'new_message' || data.type === 'message') && data.message) {
+            handleGlobalNewMessage(data.message);
           }
         };
       }
@@ -186,6 +194,15 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         } catch (err) {
           // ignore
         }
+      } else if (e.key === 'chatflow_message_sync' && e.newValue) {
+        try {
+          const data = JSON.parse(e.newValue);
+          if (data && data.message) {
+            handleGlobalNewMessage(data.message);
+          }
+        } catch (err) {
+          // ignore
+        }
       }
     };
 
@@ -198,6 +215,144 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('storage', handleStorage);
     };
   }, [handleTypingEvent]);
+
+  // Global message handler ref for use across listeners
+  const handleGlobalNewMessage = useCallback((incomingMessage: any) => {
+    if (!incomingMessage) return;
+
+    // Support unwrapping if wrapped in message or data property
+    let msg = incomingMessage;
+    if (msg.message && typeof msg.message === 'object') msg = msg.message;
+    else if (msg.data && typeof msg.data === 'object' && (msg.data.text || msg.data.conversation)) msg = msg.data;
+
+    const convId = extractConversationId(msg);
+    const senderId = extractSenderId(msg);
+    if (!convId) return;
+
+    // Clear typing indicator for this conversation when message arrives
+    setTypingUsers((prev) => {
+      const list = prev[convId] || [];
+      const nextList = list.filter((u) => u.userId !== senderId);
+      if (nextList.length === list.length) return prev;
+      return { ...prev, [convId]: nextList };
+    });
+
+    // Clear API typing state too
+    fetch('/api/typing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ conversationId: convId, userId: senderId, isTyping: false }),
+    }).catch(() => { });
+
+    const activeId = useChatUIStore.getState().activeConversationId;
+    const myId = useAuthStore.getState().user?._id;
+    const isFromMe = Boolean(myId && senderId === myId);
+    const isCurrentlyOpen = activeId === convId;
+
+    // 1. Update Messages Cache (supports both InfiniteData & flat formats safely)
+    queryClient.setQueryData<any>(
+      queryKeys.conversations.messages(convId),
+      (old: any) => {
+        if (!old) {
+          return {
+            pages: [{ messages: [msg], hasMore: false }],
+            pageParams: [undefined],
+          };
+        }
+
+        // Handle InfiniteData structure
+        if (old.pages && Array.isArray(old.pages)) {
+          const allMessages = old.pages.flatMap((p: any) => p?.messages || []);
+          if (allMessages.some((m: any) => m._id === msg._id)) {
+            return old;
+          }
+
+          let replaced = false;
+          const nextPages = old.pages.map((page: any) => {
+            if (!page?.messages) return page;
+            const optIdx = page.messages.findIndex(
+              (m: any) =>
+                (m._id && m._id.startsWith('optimistic-') && m.text === msg.text) ||
+                (m.isOptimistic && m.text === msg.text)
+            );
+            if (optIdx !== -1) {
+              replaced = true;
+              const nextMsgs = [...page.messages];
+              nextMsgs[optIdx] = msg;
+              return { ...page, messages: nextMsgs };
+            }
+            return page;
+          });
+
+          if (!replaced && nextPages.length > 0) {
+            nextPages[0] = {
+              ...nextPages[0],
+              messages: [msg, ...(nextPages[0]?.messages || [])],
+            };
+          }
+
+          return { ...old, pages: nextPages };
+        }
+
+        // Handle Flat structure
+        if (old.messages && Array.isArray(old.messages)) {
+          if (old.messages.some((m: any) => m._id === msg._id)) return old;
+          const optIdx = old.messages.findIndex(
+            (m: any) =>
+              (m._id && m._id.startsWith('optimistic-') && m.text === msg.text) ||
+              (m.isOptimistic && m.text === msg.text)
+          );
+          if (optIdx !== -1) {
+            const next = [...old.messages];
+            next[optIdx] = msg;
+            return { ...old, messages: next };
+          }
+          return { ...old, messages: [...old.messages, msg] };
+        }
+
+        return old;
+      }
+    );
+
+    // Invalidate messages query to guarantee fresh state
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.conversations.messages(convId),
+      refetchType: 'active',
+    });
+
+    // 2. Update Conversation List (lastMessage & unread count)
+    queryClient.setQueryData<Conversation[]>(
+      queryKeys.conversations.list(),
+      (old = []) => {
+        const index = old.findIndex((c) => c._id === convId);
+        if (index === -1) {
+          queryClient.invalidateQueries({ queryKey: queryKeys.conversations.list() });
+          return old;
+        }
+
+        const existingConv = old[index];
+        const currentUnread = existingConv.unreadCount || 0;
+        // If message is from someone else and this chat is not currently open, increment unread badge!
+        const newUnreadCount =
+          !isFromMe && !isCurrentlyOpen ? currentUnread + 1 : isCurrentlyOpen ? 0 : currentUnread;
+
+        const updated: Conversation = {
+          ...existingConv,
+          lastMessage: {
+            text: msg.text,
+            sender: senderId,
+            createdAt: msg.createdAt,
+          },
+          updatedAt: msg.createdAt,
+          unreadCount: newUnreadCount,
+        };
+
+        const nextList = [...old];
+        nextList.splice(index, 1);
+        return [updated, ...nextList];
+      }
+    );
+  }, [queryClient]);
 
   // 3. Socket.io Connection & Event Handling
   useEffect(() => {
@@ -218,6 +373,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const handleConnect = () => {
       console.log('⚡ Socket connected:', sock.id);
       setIsConnected(true);
+      const activeId = useChatUIStore.getState().activeConversationId;
+      if (activeId) {
+        sock.emit('join', activeId);
+        sock.emit('join:room', { conversationId: activeId });
+        sock.emit('conversation:join', { conversationId: activeId });
+      }
     };
 
     const handleDisconnect = (reason: string) => {
@@ -228,127 +389,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const handleConnectError = (error: any) => {
       console.warn('⚠️ Socket connection error:', error?.message || error);
       setIsConnected(false);
-    };
-
-    // Global message handler
-    const handleGlobalNewMessage = (incomingMessage: any) => {
-      const convId = extractConversationId(incomingMessage);
-      const senderId = extractSenderId(incomingMessage);
-      if (!convId) return;
-
-      // Clear typing indicator for this conversation when message arrives
-      setTypingUsers((prev) => {
-        const list = prev[convId] || [];
-        const nextList = list.filter((u) => u.userId !== senderId);
-        if (nextList.length === list.length) return prev;
-        return { ...prev, [convId]: nextList };
-      });
-
-      // Clear API typing state too
-      fetch('/api/typing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId: convId, userId: senderId, isTyping: false }),
-      }).catch(() => { });
-
-      const activeId = useChatUIStore.getState().activeConversationId;
-      const myId = useAuthStore.getState().user?._id;
-      const isFromMe = Boolean(myId && senderId === myId);
-      const isCurrentlyOpen = activeId === convId;
-
-      // 1. Update Messages Cache (supports both InfiniteData & flat formats safely)
-      queryClient.setQueryData<any>(
-        queryKeys.conversations.messages(convId),
-        (old: any) => {
-          if (!old) {
-            return {
-              pages: [{ messages: [incomingMessage], hasMore: false }],
-              pageParams: [undefined],
-            };
-          }
-
-          // Handle InfiniteData structure
-          if (old.pages && Array.isArray(old.pages)) {
-            const allMessages = old.pages.flatMap((p: any) => p?.messages || []);
-            if (allMessages.some((m: any) => m._id === incomingMessage._id)) {
-              return old;
-            }
-
-            let replaced = false;
-            const nextPages = old.pages.map((page: any) => {
-              if (!page?.messages) return page;
-              const optIdx = page.messages.findIndex(
-                (m: any) => m.isOptimistic && m.text === incomingMessage.text
-              );
-              if (optIdx !== -1) {
-                replaced = true;
-                const nextMsgs = [...page.messages];
-                nextMsgs[optIdx] = incomingMessage;
-                return { ...page, messages: nextMsgs };
-              }
-              return page;
-            });
-
-            if (!replaced && nextPages.length > 0) {
-              nextPages[0] = {
-                ...nextPages[0],
-                messages: [incomingMessage, ...(nextPages[0]?.messages || [])],
-              };
-            }
-
-            return { ...old, pages: nextPages };
-          }
-
-          // Handle Flat structure
-          if (old.messages && Array.isArray(old.messages)) {
-            if (old.messages.some((m: any) => m._id === incomingMessage._id)) return old;
-            const optIdx = old.messages.findIndex(
-              (m: any) => m.isOptimistic && m.text === incomingMessage.text
-            );
-            if (optIdx !== -1) {
-              const next = [...old.messages];
-              next[optIdx] = incomingMessage;
-              return { ...old, messages: next };
-            }
-            return { ...old, messages: [...old.messages, incomingMessage] };
-          }
-
-          return old;
-        }
-      );
-
-      // 2. Update Conversation List (lastMessage & unread count)
-      queryClient.setQueryData<Conversation[]>(
-        queryKeys.conversations.list(),
-        (old = []) => {
-          const index = old.findIndex((c) => c._id === convId);
-          if (index === -1) {
-            queryClient.invalidateQueries({ queryKey: queryKeys.conversations.list() });
-            return old;
-          }
-
-          const existingConv = old[index];
-          const currentUnread = existingConv.unreadCount || 0;
-          // If message is from someone else and this chat is not currently open, increment unread badge!
-          const newUnreadCount =
-            !isFromMe && !isCurrentlyOpen ? currentUnread + 1 : isCurrentlyOpen ? 0 : currentUnread;
-
-          const updated: Conversation = {
-            ...existingConv,
-            lastMessage: {
-              text: incomingMessage.text,
-              sender: senderId,
-              createdAt: incomingMessage.createdAt,
-            },
-            updatedAt: incomingMessage.createdAt,
-            unreadCount: newUnreadCount,
-          };
-
-          const nextList = [...old];
-          nextList.splice(index, 1);
-          return [updated, ...nextList];
-        }
-      );
     };
 
     const handleGlobalConversationUpdated = (updatedGroup: any) => {
@@ -362,12 +402,26 @@ export function SocketProvider({ children }: { children: ReactNode }) {
           return next;
         }
       );
+      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.list() });
     };
+
+    const messageEvents = [
+      'message:new',
+      'message',
+      'newMessage',
+      'new_message',
+      'chat:message',
+      'message:created',
+      'message:receive',
+      'receive:message',
+    ];
 
     sock.on('connect', handleConnect);
     sock.on('disconnect', handleDisconnect);
     sock.on('connect_error', handleConnectError);
-    sock.on('message:new', handleGlobalNewMessage);
+    messageEvents.forEach((evt) => {
+      sock.on(evt, handleGlobalNewMessage);
+    });
     sock.on('conversation:updated', handleGlobalConversationUpdated);
     sock.on('typing', handleTypingEvent);
     sock.on('user:typing', handleTypingEvent);
@@ -380,21 +434,31 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       sock.off('connect', handleConnect);
       sock.off('disconnect', handleDisconnect);
       sock.off('connect_error', handleConnectError);
-      sock.off('message:new', handleGlobalNewMessage);
+      messageEvents.forEach((evt) => {
+        sock.off(evt, handleGlobalNewMessage);
+      });
       sock.off('conversation:updated', handleGlobalConversationUpdated);
       sock.off('typing', handleTypingEvent);
       sock.off('user:typing', handleTypingEvent);
     };
-  }, [token, isAuthenticated, queryClient, handleTypingEvent]);
+  }, [token, isAuthenticated, queryClient, handleTypingEvent, handleGlobalNewMessage]);
 
   const onNewMessage = useCallback(
     (callback: (message: Message) => void) => {
       const sock = socket || getSocket(token);
       if (!sock) return () => { };
 
-      sock.on('message:new', callback);
+      const messageEvents = [
+        'message:new',
+        'message',
+        'newMessage',
+        'new_message',
+        'chat:message',
+      ];
+      messageEvents.forEach((evt) => sock.on(evt, callback));
+
       return () => {
-        sock.off('message:new', callback);
+        messageEvents.forEach((evt) => sock.off(evt, callback));
       };
     },
     [socket, token]

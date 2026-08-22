@@ -76,22 +76,41 @@ export function useMessagesQuery(conversationId: string | null) {
       return oldestMessage?._id || oldestMessage?.createdAt;
     },
     enabled: isAuthenticated && !!conversationId,
-    // No refetchInterval: real-time updates come via socket; polling would cause scroll jumps during pagination
-    staleTime: 30_000,
+    // Active conversation polling every 2.5 seconds as a bulletproof real-time sync fallback
+    refetchInterval: 2500,
+    refetchIntervalInBackground: false,
+    staleTime: 1000,
     select: (data) => {
-      // Flatten all pages and deduplicate messages by ID
-      const allMessagesMap = new Map<string, Message>();
+      const allMessages: Message[] = [];
+      const seenIds = new Set<string>();
+
       data.pages.forEach((page) => {
         (page?.messages || []).forEach((m) => {
-          if (m && m._id) {
-            allMessagesMap.set(m._id, m);
+          if (m && m._id && !seenIds.has(m._id)) {
+            seenIds.add(m._id);
+            allMessages.push(m);
+          } else if (m && !m._id) {
+            allMessages.push(m);
           }
         });
       });
 
-      const flattened = Array.from(allMessagesMap.values());
+      // Filter out optimistic duplicate if real backend message already exists
+      const realMessages = allMessages.filter((m) => !m.isOptimistic && !m._id?.startsWith('optimistic-'));
+      const deduplicated = allMessages.filter((m) => {
+        if (m.isOptimistic || m._id?.startsWith('optimistic-')) {
+          const hasRealMatch = realMessages.some(
+            (real) =>
+              real.text === m.text &&
+              Math.abs(new Date(real.createdAt).getTime() - new Date(m.createdAt).getTime()) < 30000
+          );
+          return !hasRealMatch;
+        }
+        return true;
+      });
+
       // Sort chronologically: oldest at index 0 (top) -> newest at index N-1 (bottom)
-      const sorted = flattened.sort(
+      const sorted = deduplicated.sort(
         (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
 
