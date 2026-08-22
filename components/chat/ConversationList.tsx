@@ -139,7 +139,7 @@ export function ConversationList({
                 onClick={() => onSelectConversation(conv)}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all relative text-left group cursor-pointer ${
                   isSelected
-                    ? 'bg-secondary-container text-on-secondary-container shadow-sm'
+                    ? 'bg-primary text-on-primary shadow-md shadow-primary/20'
                     : hasUnread
                     ? 'bg-surface-container-lowest hover:bg-surface-container-high shadow-xs'
                     : 'hover:bg-surface-container-high/80 text-on-surface'
@@ -147,7 +147,7 @@ export function ConversationList({
               >
                 {/* Active indicator bar */}
                 {isSelected && (
-                  <div className="w-1 absolute left-0 top-1/2 -translate-y-1/2 h-8 bg-primary rounded-r-full" />
+                  <div className="w-1 absolute left-0 top-1/2 -translate-y-1/2 h-8 bg-white rounded-r-full" />
                 )}
 
                 <div className="relative shrink-0">
@@ -164,7 +164,7 @@ export function ConversationList({
                     <span
                       className={`text-xs truncate ${
                         isSelected
-                          ? 'text-on-secondary-container font-bold'
+                          ? 'text-on-primary font-bold'
                           : hasUnread
                           ? 'text-on-surface font-extrabold'
                           : 'text-on-surface font-bold'
@@ -175,7 +175,7 @@ export function ConversationList({
                     <span
                       className={`text-[10px] shrink-0 font-medium ${
                         isSelected
-                          ? 'text-on-secondary-container/80'
+                          ? 'text-on-primary/80'
                           : hasUnread
                           ? 'text-primary font-bold'
                           : 'text-on-surface-variant'
@@ -188,7 +188,7 @@ export function ConversationList({
                   <p
                     className={`text-xs truncate ${
                       isSelected
-                        ? 'text-on-secondary-container/90'
+                        ? 'text-on-primary/90'
                         : hasUnread
                         ? 'text-on-surface font-semibold'
                         : 'text-on-surface-variant'

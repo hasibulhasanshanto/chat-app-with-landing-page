@@ -406,7 +406,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={() => scrollToBottom(true)}
-            className="bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer border border-on-secondary-container/10"
+            className="bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 rounded-full shadow-lg shadow-primary/30 flex items-center gap-2 text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer border border-white/20"
           >
             <ArrowDown className="w-4 h-4" />
             <span>

@@ -149,7 +149,7 @@ export function LandingInteractiveDemo() {
                     onClick={(e) => handleSelectTab(e, item)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left cursor-pointer ${
                       isSelected
-                        ? 'bg-secondary-container text-on-secondary-container shadow-sm'
+                        ? 'bg-primary text-on-primary shadow-sm shadow-primary/20'
                         : 'hover:bg-surface-container-high text-on-surface'
                     }`}
                   >
