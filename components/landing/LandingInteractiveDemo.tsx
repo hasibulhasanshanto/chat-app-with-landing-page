@@ -4,52 +4,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Send, CheckCheck, Circle, Smile, Plus, Phone, Video } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
-
-const EMOJI_LIST = ['👍', '❤️', '😊', '🎉', '🚀', '🔥', '👏', '✨', '👋', '💯'];
-
-const DEMO_PREVIEWS = [
-  {
-    id: 'sarah',
-    name: 'Sarah Ahmed',
-    role: 'Product Manager',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-    online: true,
-    lastTime: '10:44 AM',
-    messages: [
-      { id: 1, sender: 'sarah', text: 'Hey! Are we still meeting at 4 PM for the design review?', time: '10:42 AM' },
-      { id: 2, sender: 'me', text: "Yes, absolutely! I've updated the Figma components.", time: '10:43 AM' },
-      { id: 3, sender: 'sarah', text: 'Perfect! See you then. Looking forward to it.', time: '10:44 AM' },
-    ],
-  },
-  {
-    id: 'team',
-    name: 'Design Team',
-    role: '6 members',
-    isGroup: true,
-    online: true,
-    lastTime: '10:30 AM',
-    messages: [
-      { id: 1, sender: 'Alex Rivera', text: 'New landing page components have been deployed!', time: '10:25 AM' },
-      { id: 2, sender: 'me', text: 'The typography and micro-interactions look stunning.', time: '10:28 AM' },
-      { id: 3, sender: 'Sarah Ahmed', text: 'Agree! Let us do a quick QA pass today.', time: '10:30 AM' },
-    ],
-  },
-  {
-    id: 'david',
-    name: 'David Chen',
-    role: 'Engineering Lead',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    online: false,
-    lastTime: 'Yesterday',
-    messages: [
-      { id: 1, sender: 'david', text: 'API endpoints for socket events are fully tested.', time: 'Yesterday' },
-      { id: 2, sender: 'me', text: 'Awesome! Optimistic UI handling is rock solid.', time: 'Yesterday' },
-    ],
-  },
-];
+import { DEMO_PREVIEWS, EMOJI_LIST, DemoConversation } from '@/data/landing/interactiveDemo';
 
 export function LandingInteractiveDemo() {
-  const [activeTab, setActiveTab] = useState(DEMO_PREVIEWS[0]);
+  const [activeTab, setActiveTab] = useState<DemoConversation>(DEMO_PREVIEWS[0]);
   const [interactiveMessages, setInteractiveMessages] = useState(DEMO_PREVIEWS[0].messages);
   const [inputText, setInputText] = useState('');
   const [showEmojis, setShowEmojis] = useState(false);
