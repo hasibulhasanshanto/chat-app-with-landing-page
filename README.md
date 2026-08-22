@@ -35,6 +35,24 @@
 
 ---
 
+## ⚡ Lighthouse Performance & Optimization Scores
+
+The application is engineered for peak responsiveness, sub-second First Contentful Paint, zero-CLS layout stability, and SEO excellence:
+
+| Metric | Score | Status | Details |
+|---|:---:|:---:|---|
+| **Performance** | **96 / 100** | 🟢 | Sub-second LCP, zero render-blocking styles |
+| **Accessibility** | **94 / 100** | 🟢 | Accessible ARIA landmarks, WCAG contrast |
+| **Best Practices** | **100 / 100** | 🟢 | Strict HTTPS headers, modern web standards |
+| **SEO** | **92 / 100** | 🟢 | JSON-LD schema, canonical tags, OpenGraph |
+| **Agentic Browsing** | **2 / 2** | 🟢 | Machine-readable metadata & landmarks |
+
+<div align="center">
+  <img src="./public/optimization%20score.png" alt="Lighthouse Optimization & Performance Score" width="100%" style="border-radius: 16px; border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+---
+
 ## 🛠️ Technology Stack
 
 | Domain                           | Technologies & Libraries                                                                                       |
