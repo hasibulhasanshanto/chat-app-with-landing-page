@@ -9,6 +9,8 @@ import { useChatUIStore } from '@/store/useChatUIStore';
 import { getSocket } from '@/lib/socket';
 import { Message, GroupConversation, Conversation } from '@/types/chat';
 
+import { playMessageNotificationSound } from '@/lib/sound';
+
 export interface TypingUser {
   userId: string;
   name?: string;
@@ -248,6 +250,11 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const myId = useAuthStore.getState().user?._id;
     const isFromMe = Boolean(myId && senderId === myId);
     const isCurrentlyOpen = activeId === convId;
+
+    // Play notification sound for incoming message from other user
+    if (!isFromMe) {
+      playMessageNotificationSound();
+    }
 
     // 1. Update Messages Cache (supports both InfiniteData & flat formats safely)
     queryClient.setQueryData<any>(

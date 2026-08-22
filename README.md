@@ -28,6 +28,7 @@
 - **👥 Direct & Group Workspace**: Direct 1-to-1 conversations and multi-participant group channels with member management, admin role assignments, and dynamic channel renaming.
 - **✨ Google Stitch Design System**: Pixel-perfect UI inspired by Material Design 3 and Google Stitch aesthetics, complete with custom brand scrollbars, ambient glows, and responsive drawer navigation.
 - **✍️ Real-Time 3-Dots Typing Indicator**: Synchronized typing presence powered by WebSockets, SSE streams, and cross-tab `BroadcastChannel`.
+- **🔔 Real-Time Audio Chime Alerts**: Web Audio API synthesized crystal-clear dual-tone notification chimes (`587Hz -> 880Hz`) on incoming messages with zero asset overhead and zero network latency.
 - **📜 Infinite Scroll Pagination**: Reverse infinite scrolling that seamlessly loads historical message batches without jumping scroll offsets.
 - **🛡️ Enterprise-Grade Auth & Security**: JWT Bearer cookie authentication, Next.js Edge Middleware route guards, and clean logout with total cookie revocation.
 - **📱 Responsive Mobile & Tablet Experience**: Touch-first mobile message composer, full-width responsive chat views, and slide-over conversation details drawer on tablets and smartphones.
@@ -42,6 +43,7 @@
 | **UI Library**                   | [React 19.2](https://react.dev/) + React DOM 19                                                                |
 | **Type Safety**                  | [TypeScript 5](https://www.typescriptlang.org/)                                                                |
 | **Motion & Animations**          | [GSAP (GreenSock)](https://greensock.com/gsap/) + [ScrollTrigger](https://greensock.com/scrolltrigger/)        |
+| **Audio Engine**                 | [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) (Synthesized harmonic notification chime) |
 | **Styling & Design System**      | [Tailwind CSS v4](https://tailwindcss.com/), [Lucide React](https://lucide.dev/), Google Material Symbols      |
 | **Web App Installability (PWA)** | Web App Manifest (`manifest.webmanifest`), standalone display, multi-size vector icons                         |
 | **Client State Management**      | [Zustand v5](https://github.com/pmndrs/zustand) (UI modals, active chat view, tabs, drawer states)             |
@@ -171,7 +173,7 @@ npm run lint
 │   └── landing/                      # features.ts, techStack.ts, testimonials.ts, faq.ts, interactiveDemo.ts
 ├── context/                          # React Context providers (Auth, Socket, Toast)
 ├── hooks/                            # Custom hooks & React Query mutations/queries
-├── lib/                              # Core utilities, API client, Socket instance, Cookie helpers
+├── lib/                              # Core utilities, API client, Socket instance, sound.ts (Web Audio chime), Cookie helpers
 ├── store/                            # Zustand reactive stores (useAuthStore, useChatUIStore)
 ├── types/                            # TypeScript schemas (chat, user, api)
 ├── API_DOCUMENTATION.md              # REST & WebSocket API specification

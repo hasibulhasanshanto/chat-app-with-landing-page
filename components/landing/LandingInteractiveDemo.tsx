@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Send, CheckCheck, Circle, Smile, Plus, Phone, Video } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { DEMO_PREVIEWS, EMOJI_LIST, DemoConversation } from '@/data/landing/interactiveDemo';
+import { playMessageNotificationSound } from '@/lib/sound';
 
 export function LandingInteractiveDemo() {
   const [activeTab, setActiveTab] = useState<DemoConversation>(DEMO_PREVIEWS[0]);
@@ -90,6 +91,7 @@ export function LandingInteractiveDemo() {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
+      playMessageNotificationSound();
     }, 1400);
   };
 
