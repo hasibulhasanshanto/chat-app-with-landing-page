@@ -45,8 +45,8 @@ export function useConversationsQuery() {
       }));
     },
     enabled: isAuthenticated,
-    // Background polling every 3 seconds for guaranteed synchronization across tabs/browsers
-    refetchInterval: 3000,
+    // Background polling every 1.5 seconds for rapid synchronization across tabs/browsers
+    refetchInterval: 1500,
     refetchIntervalInBackground: false,
   });
 }
@@ -76,10 +76,10 @@ export function useMessagesQuery(conversationId: string | null) {
       return oldestMessage?._id || oldestMessage?.createdAt;
     },
     enabled: isAuthenticated && !!conversationId,
-    // Active conversation polling every 2.5 seconds as a bulletproof real-time sync fallback
-    refetchInterval: 2500,
+    // Ultra-fast active conversation polling (1000ms) for lightning-fast delivery
+    refetchInterval: 1000,
     refetchIntervalInBackground: false,
-    staleTime: 1000,
+    staleTime: 500,
     select: (data) => {
       const allMessages: Message[] = [];
       const seenIds = new Set<string>();

@@ -153,7 +153,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       } catch (e) {
         // ignore
       }
-    }, 2000);
+    }, 1000);
 
     return () => {
       if (eventSource) {
