@@ -1,3 +1,9 @@
 export { LandingHeader } from './LandingHeader';
 export { LandingFooter } from './LandingFooter';
 export { LandingInteractiveDemo } from './LandingInteractiveDemo';
+export { LandingHero } from './LandingHero';
+export { LandingFeatures } from './LandingFeatures';
+export { LandingTechStack } from './LandingTechStack';
+export { LandingTestimonials } from './LandingTestimonials';
+export { LandingFAQ } from './LandingFAQ';
+export { LandingCTA } from './LandingCTA';

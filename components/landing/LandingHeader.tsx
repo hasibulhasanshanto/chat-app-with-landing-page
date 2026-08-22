@@ -32,7 +32,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
         </Link>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-on-surface-variant">
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-on-surface-variant">
           <a href="#demo" className="hover:text-primary transition-colors">
             Interactive Demo
           </a>
@@ -41,6 +41,12 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
           </a>
           <a href="#tech-stack" className="hover:text-primary transition-colors">
             Tech Stack
+          </a>
+          <a href="#testimonials" className="hover:text-primary transition-colors">
+            Reviews
+          </a>
+          <a href="#faq" className="hover:text-primary transition-colors">
+            FAQ
           </a>
         </nav>
 
