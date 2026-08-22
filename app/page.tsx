@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing.vercel.app'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing-page.vercel.app'
   ),
   alternates: {
     canonical: '/',
@@ -94,7 +94,7 @@ export default function LandingPage() {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'ChatFlow',
-    url: 'https://chat-app-with-landing.vercel.app',
+    url: 'https://chat-app-with-landing-page.vercel.app',
     applicationCategory: 'CommunicationApplication',
     operatingSystem: 'Any',
     description:

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing-page.vercel.app';
   const currentDate = new Date();
 
   return [
