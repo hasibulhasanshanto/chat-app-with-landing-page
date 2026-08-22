@@ -62,7 +62,7 @@ export function LandingTechStack() {
             return (
               <div
                 key={idx}
-                className="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/20 text-center shadow-xs hover:shadow-md hover:border-primary/30 transition-all group"
+                className="gsap-stack-card bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/20 text-center shadow-xs hover:shadow-md hover:border-primary/30 transition-all group"
               >
                 <div className={`w-12 h-12 rounded-2xl bg-surface-container mx-auto flex items-center justify-center mb-3 ${item.iconColor} group-hover:scale-110 transition-transform`}>
                   <Icon className="w-6 h-6" />

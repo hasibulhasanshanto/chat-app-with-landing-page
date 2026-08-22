@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, MessageSquare } from 'lucide-react';
+import { ChevronDown, HelpCircle, MessageSquare, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const FAQS = [
@@ -38,6 +38,7 @@ const FAQS = [
 ];
 
 export function LandingFAQ() {
+  // First FAQ item is open by default on initial render
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleFAQ = (index: number) => {
@@ -48,8 +49,9 @@ export function LandingFAQ() {
     <section id="faq" className="py-20 bg-surface">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
-            Got Questions?
+          <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-3 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span>Got Questions?</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mb-3">
             Frequently Asked Questions
@@ -59,30 +61,48 @@ export function LandingFAQ() {
           </p>
         </div>
 
-        {/* FAQ Accordion List */}
+        {/* FAQ Accordion List with Brand-aligned Active States */}
         <div className="space-y-4">
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
                 key={idx}
-                className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl overflow-hidden transition-all shadow-xs"
+                className={`rounded-2xl overflow-hidden transition-all duration-200 border ${
+                  isOpen
+                    ? 'bg-surface-container-lowest border-primary/35 shadow-md ring-1 ring-primary/20'
+                    : 'bg-surface-container-lowest border-outline-variant/30 hover:border-outline-variant/60 shadow-xs'
+                }`}
               >
                 <button
                   type="button"
                   onClick={() => toggleFAQ(idx)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left gap-4 hover:bg-surface-container-low transition-colors cursor-pointer"
+                  className={`w-full px-6 py-5 flex items-center justify-between text-left gap-4 transition-colors cursor-pointer ${
+                    isOpen ? 'bg-primary/[0.03]' : 'hover:bg-surface-container-low/70'
+                  }`}
                 >
-                  <span className="font-bold text-base text-on-surface">
+                  <span
+                    className={`font-bold text-base transition-colors ${
+                      isOpen ? 'text-primary' : 'text-on-surface'
+                    }`}
+                  >
                     {faq.question}
                   </span>
-                  <div className={`w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180 bg-primary/10 text-primary' : ''}`}>
+
+                  {/* Brand Styled Active/Inactive Chevron Toggle Button */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 shrink-0 ${
+                      isOpen
+                        ? 'rotate-180 bg-primary text-on-primary shadow-sm shadow-primary/30 scale-105'
+                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                    }`}
+                  >
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-5 pt-1 text-sm text-on-surface-variant leading-relaxed border-t border-outline-variant/15 animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="px-6 pb-5 pt-2 text-sm text-on-surface-variant leading-relaxed border-t border-primary/10 bg-primary/[0.02] animate-in fade-in slide-in-from-top-1 duration-150">
                     {faq.answer}
                   </div>
                 )}

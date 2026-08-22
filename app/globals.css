@@ -108,23 +108,30 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom smooth scrollbar */
+/* Custom smooth brand scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(119, 117, 135, 0.25);
+  background: rgba(243, 244, 245, 0.5);
   border-radius: 9999px;
 }
 
+::-webkit-scrollbar-thumb {
+  background: #4f46e5;
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(119, 117, 135, 0.45);
+  background: #3525cd;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4f46e5 transparent;
 }
 
 .no-scrollbar::-webkit-scrollbar {

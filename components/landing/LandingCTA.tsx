@@ -6,7 +6,7 @@ export function LandingCTA() {
   return (
     <section className="py-20 bg-surface relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="bg-gradient-to-r from-primary via-indigo-600 to-primary text-on-primary rounded-3xl p-8 sm:p-14 shadow-2xl relative overflow-hidden border border-white/10">
+        <div className="gsap-cta-banner bg-gradient-to-r from-primary via-indigo-600 to-primary text-on-primary rounded-3xl p-8 sm:p-14 shadow-2xl relative overflow-hidden border border-white/10">
           {/* Ambient inner glow */}
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-sky-400/20 rounded-full blur-2xl pointer-events-none" />

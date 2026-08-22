@@ -9,6 +9,7 @@ import {
   LandingFAQ,
   LandingCTA,
   LandingFooter,
+  LandingGsapAnimations,
 } from '@/components/landing';
 
 export const metadata: Metadata = {
@@ -124,23 +125,26 @@ export default function LandingPage() {
       {/* 1. Reusable Landing Header */}
       <LandingHeader />
 
-      {/* 2. Hero Section with Interactive Sandbox Teaser */}
-      <LandingHero />
+      {/* GSAP Enhanced Animated Sections */}
+      <LandingGsapAnimations>
+        {/* 2. Hero Section with Interactive Sandbox Teaser */}
+        <LandingHero />
 
-      {/* 3. Core Features Grid */}
-      <LandingFeatures />
+        {/* 3. Core Features Grid */}
+        <LandingFeatures />
 
-      {/* 4. Full-Stack Tech Architecture */}
-      <LandingTechStack />
+        {/* 4. Full-Stack Tech Architecture */}
+        <LandingTechStack />
 
-      {/* 5. Client Testimonials & Review Slider */}
-      <LandingTestimonials />
+        {/* 5. Client Testimonials & Review Slider */}
+        <LandingTestimonials />
 
-      {/* 6. Frequently Asked Questions (FAQ) Accordion */}
-      <LandingFAQ />
+        {/* 6. Frequently Asked Questions (FAQ) Accordion */}
+        <LandingFAQ />
 
-      {/* 7. Call To Action (CTA) Banner */}
-      <LandingCTA />
+        {/* 7. Call To Action (CTA) Banner */}
+        <LandingCTA />
+      </LandingGsapAnimations>
 
       {/* 8. Reusable Landing Footer */}
       <LandingFooter />

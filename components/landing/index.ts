@@ -7,3 +7,4 @@ export { LandingTechStack } from './LandingTechStack';
 export { LandingTestimonials } from './LandingTestimonials';
 export { LandingFAQ } from './LandingFAQ';
 export { LandingCTA } from './LandingCTA';
+export { LandingGsapAnimations } from './LandingGsapAnimations';

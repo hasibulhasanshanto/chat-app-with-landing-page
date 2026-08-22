@@ -68,7 +68,7 @@ export function LandingFeatures() {
             return (
               <div
                 key={idx}
-                className="bg-surface-container-lowest p-6 sm:p-7 rounded-3xl border border-outline-variant/20 shadow-xs hover:shadow-md hover:border-primary/30 transition-all group"
+                className="gsap-feature-card bg-surface-container-lowest p-6 sm:p-7 rounded-3xl border border-outline-variant/20 shadow-xs hover:shadow-md hover:border-primary/30 transition-all group"
               >
                 <div className={`w-12 h-12 rounded-2xl ${feature.iconBg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
                   <Icon className="w-6 h-6" />

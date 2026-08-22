@@ -46,7 +46,7 @@ export function Avatar({
   const showImage = src && !imageError;
 
   return (
-    <div className={cn('relative inline-flex shrink-0 select-none items-center justify-center', className)}>
+    <div className={cn('relative inline-flex shrink-0 select-none items-center justify-center rounded-full', className)}>
       <div
         className={cn(
           'rounded-full flex items-center justify-center font-semibold overflow-hidden shadow-sm transition-transform',
