@@ -210,15 +210,17 @@ export function LandingInteractiveDemo() {
               <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   type="button"
-                  className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
+                  className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
                   title="Video Call"
+                  aria-label="Start video call"
                 >
                   <Video className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
+                  className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors cursor-pointer"
                   title="Voice Call"
+                  aria-label="Start voice call"
                 >
                   <Phone className="w-4 h-4" />
                 </button>
@@ -317,8 +319,9 @@ export function LandingInteractiveDemo() {
                   <button
                     type="button"
                     onClick={() => insertEmoji('📎')}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
                     title="Add attachment / emoji"
+                    aria-label="Add attachment"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -330,14 +333,16 @@ export function LandingInteractiveDemo() {
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={`Message ${activeTab.name}... (Press Enter)`}
+                    aria-label={`Message ${activeTab.name}`}
                     className="flex-1 bg-transparent border-none focus:outline-none text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/50 px-1"
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowEmojis(!showEmojis)}
-                    className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors shrink-0 cursor-pointer"
+                    className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-full transition-colors shrink-0 cursor-pointer"
                     title="Emoji picker"
+                    aria-label="Toggle emoji picker"
                   >
                     <Smile className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
@@ -347,6 +352,7 @@ export function LandingInteractiveDemo() {
                     disabled={!inputText.trim()}
                     className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-on-primary rounded-full shadow-xs hover:shadow-md hover:bg-primary/90 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
                     title="Send message"
+                    aria-label="Send demo message"
                   >
                     <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 -mr-0.5" />
                   </button>

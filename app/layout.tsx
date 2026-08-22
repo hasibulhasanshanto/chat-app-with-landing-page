@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/providers/QueryProvider';
@@ -10,7 +10,15 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
+  preload: true,
 });
+
+export const viewport: Viewport = {
+  themeColor: '#4f46e5',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -27,11 +35,12 @@ export const metadata: Metadata = {
     'socket.io chat',
     'live chat application',
     'ChatFlow',
+    'PWA chat app',
   ],
   authors: [{ name: 'ChatFlow' }],
   creator: 'ChatFlow',
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing.vercel.app'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://chat-app-with-landing-page.vercel.app'
   ),
   icons: {
     icon: [
@@ -66,15 +75,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
+        {/* Preconnect to backend origin for zero-latency socket connection */}
+        <link rel="dns-prefetch" href="https://frontend-task-chatapp.onrender.com" />
+        <link rel="preconnect" href="https://frontend-task-chatapp.onrender.com" crossOrigin="anonymous" />
+
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon.svg" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-          rel="stylesheet"
-        />
       </head>
-      <body className="min-h-full flex flex-col bg-surface text-on-surface">
+      <body className="min-h-full flex flex-col bg-surface text-on-surface font-sans">
         <QueryProvider>
           <AuthProvider>
             <SocketProvider>

@@ -27,17 +27,17 @@ export function LandingFooter({ className = '' }: LandingFooterProps) {
         </div>
 
         {/* Quick Links */}
-        <div className="flex items-center gap-6 font-medium">
-          <Link href="/login" className="hover:text-primary transition-colors">
+        <nav aria-label="Footer Navigation" className="flex items-center gap-6 font-medium">
+          <Link href="/login" className="hover:text-primary transition-colors py-2">
             Log In
           </Link>
-          <Link href="/chat" className="hover:text-primary transition-colors">
+          <Link href="/chat" className="hover:text-primary transition-colors py-2">
             Chat Dashboard
           </Link>
-          <Link href="/login" className="hover:text-primary transition-colors">
+          <Link href="/login" className="hover:text-primary transition-colors py-2">
             Get Started
           </Link>
-        </div>
+        </nav>
       </div>
     </footer>
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { MessageSquare, ArrowRight, User, Phone, Loader2, Sparkles, ChevronDown, Check } from 'lucide-react';
+import { MessageSquare, ArrowRight, ArrowLeft, AlertCircle, User, Phone, Loader2, Sparkles, ChevronDown, Check } from 'lucide-react';
 
 const COUNTRY_CODES = [
   { code: '+1', country: 'US', name: 'United States' },
@@ -100,7 +100,7 @@ export default function LoginPage() {
           href="/"
           className="inline-flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors py-1.5 px-3 rounded-lg hover:bg-surface-container"
         >
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <ArrowLeft className="w-4 h-4" />
           Back to Home
         </Link>
       </div>
@@ -125,24 +125,31 @@ export default function LoginPage() {
             <span>Quick Test Accounts</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.name}
-                type="button"
-                onClick={() => handleQuickFill(acc)}
-                className="text-[11px] py-1.5 px-2 bg-surface-container-lowest hover:bg-primary-fixed transition-colors rounded-lg border border-outline-variant/30 text-on-surface font-medium truncate text-center"
-                title={`Click to fill: ${acc.name} (${acc.countryCode}${acc.phone})`}
-              >
-                {acc.name.split(' ')[0]}
-              </button>
-            ))}
+            {DEMO_ACCOUNTS.map((acc) => {
+              const isSelected = name === acc.name && phone === acc.phone;
+              return (
+                <button
+                  key={acc.name}
+                  type="button"
+                  onClick={() => handleQuickFill(acc)}
+                  className={`text-[11px] py-1.5 px-2 transition-all rounded-lg font-medium truncate text-center cursor-pointer ${
+                    isSelected
+                      ? 'bg-primary text-on-primary font-bold shadow-xs border border-primary scale-[1.02]'
+                      : 'bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant/30 text-on-surface'
+                  }`}
+                  title={`Click to fill: ${acc.name} (${acc.countryCode}${acc.phone})`}
+                >
+                  {acc.name.split(' ')[0]}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Error Alert */}
         {errorMsg && (
           <div className="mb-5 p-3.5 rounded-xl bg-error-container/60 border border-error/30 text-on-error-container text-xs font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
-            <span className="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">error</span>
+            <AlertCircle className="w-4 h-4 text-error shrink-0 mt-0.5" />
             <div className="flex-1">{errorMsg}</div>
           </div>
         )}

@@ -130,13 +130,15 @@ export function LandingTestimonials() {
                       key={idx}
                       type="button"
                       onClick={() => goToSlide(idx)}
-                      className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      aria-label={`Go to testimonial ${idx + 1}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer min-h-[24px] min-w-[24px] flex items-center justify-center p-1`}
+                    >
+                      <span className={`block rounded-full transition-all duration-300 ${
                         idx === currentIndex
-                          ? 'w-6 sm:w-8 bg-primary shadow-xs'
-                          : 'w-2 sm:w-2.5 bg-outline-variant/50 hover:bg-outline-variant'
-                      }`}
-                      title={`Go to testimonial ${idx + 1}`}
-                    />
+                          ? 'w-6 sm:w-8 h-2 sm:h-2.5 bg-primary shadow-xs'
+                          : 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-outline-variant/50 hover:bg-outline-variant'
+                      }`} />
+                    </button>
                   ))}
                 </div>
 
@@ -144,7 +146,8 @@ export function LandingTestimonials() {
                   <button
                     type="button"
                     onClick={prevSlide}
-                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-surface-container border border-outline-variant/30 text-on-surface flex items-center justify-center hover:bg-surface-container-high hover:border-primary/40 active:scale-95 transition-all cursor-pointer shadow-xs"
+                    aria-label="Previous customer testimonial"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-surface-container border border-outline-variant/30 text-on-surface flex items-center justify-center hover:bg-surface-container-high hover:border-primary/40 active:scale-95 transition-all cursor-pointer shadow-xs"
                     title="Previous testimonial"
                   >
                     <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -152,7 +155,8 @@ export function LandingTestimonials() {
                   <button
                     type="button"
                     onClick={nextSlide}
-                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary text-on-primary flex items-center justify-center hover:bg-primary/90 hover:shadow-md active:scale-95 transition-all cursor-pointer"
+                    aria-label="Next customer testimonial"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary text-on-primary flex items-center justify-center hover:bg-primary/90 hover:shadow-md active:scale-95 transition-all cursor-pointer"
                     title="Next testimonial"
                   >
                     <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

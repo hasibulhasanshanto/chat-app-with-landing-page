@@ -45,6 +45,8 @@ export function LandingFAQ() {
                 <button
                   type="button"
                   onClick={() => toggleFAQ(idx)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${idx}`}
                   className={`w-full px-6 py-5 flex items-center justify-between text-left gap-4 transition-colors cursor-pointer ${
                     isOpen ? 'bg-primary/[0.03]' : 'hover:bg-surface-container-low/70'
                   }`}
@@ -70,7 +72,10 @@ export function LandingFAQ() {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-5 pt-2 text-sm text-on-surface-variant leading-relaxed border-t border-primary/10 bg-primary/[0.02] animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div
+                    id={`faq-answer-${idx}`}
+                    className="px-6 pb-5 pt-2 text-sm text-on-surface-variant leading-relaxed border-t border-primary/10 bg-primary/[0.02] animate-in fade-in slide-in-from-top-1 duration-150"
+                  >
                     {faq.answer}
                   </div>
                 )}

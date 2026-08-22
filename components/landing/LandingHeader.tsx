@@ -54,7 +54,6 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
   // Smooth animated scroll to top when brand logo is clicked
   const handleScrollToTop = useCallback((e: React.MouseEvent) => {
     if (typeof window !== 'undefined') {
-      // If on landing page root, scroll smoothly to the very top
       if (window.location.pathname === '/' || window.location.pathname === '') {
         e.preventDefault();
         closeMenu();
@@ -92,7 +91,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
           href="/"
           onClick={handleScrollToTop}
           className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer"
-          title="Back to top"
+          aria-label="ChatFlow Homepage - Back to Top"
         >
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-md shadow-primary/20 group-hover:scale-105 transition-transform shrink-0">
             <MessageSquare className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
@@ -108,39 +107,39 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
         </Link>
 
         {/* Desktop Navigation Links with Smooth Animated Scrolling */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-on-surface-variant">
+        <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-on-surface-variant">
           <a
             href="#demo"
             onClick={(e) => handleSmoothScroll(e, '#demo')}
-            className="hover:text-primary transition-colors cursor-pointer"
+            className="hover:text-primary transition-colors cursor-pointer py-2"
           >
             Interactive Demo
           </a>
           <a
             href="#features"
             onClick={(e) => handleSmoothScroll(e, '#features')}
-            className="hover:text-primary transition-colors cursor-pointer"
+            className="hover:text-primary transition-colors cursor-pointer py-2"
           >
             Features
           </a>
           <a
             href="#tech-stack"
             onClick={(e) => handleSmoothScroll(e, '#tech-stack')}
-            className="hover:text-primary transition-colors cursor-pointer"
+            className="hover:text-primary transition-colors cursor-pointer py-2"
           >
             Tech Stack
           </a>
           <a
             href="#testimonials"
             onClick={(e) => handleSmoothScroll(e, '#testimonials')}
-            className="hover:text-primary transition-colors cursor-pointer"
+            className="hover:text-primary transition-colors cursor-pointer py-2"
           >
             Reviews
           </a>
           <a
             href="#faq"
             onClick={(e) => handleSmoothScroll(e, '#faq')}
-            className="hover:text-primary transition-colors cursor-pointer"
+            className="hover:text-primary transition-colors cursor-pointer py-2"
           >
             FAQ
           </a>
@@ -160,7 +159,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-on-surface px-4 py-2 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer"
+                className="text-sm font-medium text-on-surface px-4 py-2.5 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer"
               >
                 Log In
               </Link>
@@ -180,7 +179,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
           {mounted && isAuthenticated ? (
             <Link
               href="/chat"
-              className="inline-flex items-center gap-1.5 bg-primary text-on-primary text-xs font-semibold px-3 py-2 rounded-xl shadow-xs"
+              className="inline-flex items-center gap-1.5 bg-primary text-on-primary text-xs font-semibold px-3.5 py-2.5 min-h-[40px] rounded-xl shadow-xs"
             >
               <span>Chat</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -188,7 +187,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 bg-primary text-on-primary text-xs font-semibold px-3 py-2 rounded-xl shadow-xs"
+              className="inline-flex items-center gap-1.5 bg-primary text-on-primary text-xs font-semibold px-3.5 py-2.5 min-h-[40px] rounded-xl shadow-xs"
             >
               <span>Start</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -198,8 +197,10 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="w-10 h-10 rounded-xl bg-surface-container border border-outline-variant/30 text-on-surface flex items-center justify-center hover:bg-surface-container-high transition-colors cursor-pointer"
+            className="w-10 h-10 min-h-[40px] min-w-[40px] rounded-xl bg-surface-container border border-outline-variant/30 text-on-surface flex items-center justify-center hover:bg-surface-container-high transition-colors cursor-pointer"
             aria-label={isMobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -208,14 +209,17 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
 
       {/* Mobile & Tablet Drawer Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 sm:top-18 bg-surface/95 backdrop-blur-2xl border-b border-outline-variant/30 shadow-2xl z-50 animate-in fade-in slide-in-from-top-4 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div
+          id="mobile-navigation"
+          className="md:hidden fixed inset-x-0 top-16 sm:top-18 bg-surface/95 backdrop-blur-2xl border-b border-outline-variant/30 shadow-2xl z-50 animate-in fade-in slide-in-from-top-4 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto"
+        >
           <div className="px-4 sm:px-6 py-6 space-y-4">
             {/* Navigation links list with smooth scrolling */}
-            <div className="space-y-1">
+            <nav aria-label="Mobile Navigation" className="space-y-1">
               <a
                 href="#demo"
                 onClick={(e) => handleSmoothScroll(e, '#demo')}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3.5 min-h-[48px] rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                   <Radio className="w-4 h-4" />
@@ -226,7 +230,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
               <a
                 href="#features"
                 onClick={(e) => handleSmoothScroll(e, '#features')}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3.5 min-h-[48px] rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
@@ -237,7 +241,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
               <a
                 href="#tech-stack"
                 onClick={(e) => handleSmoothScroll(e, '#tech-stack')}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3.5 min-h-[48px] rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center">
                   <Layers className="w-4 h-4" />
@@ -248,7 +252,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
               <a
                 href="#testimonials"
                 onClick={(e) => handleSmoothScroll(e, '#testimonials')}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3.5 min-h-[48px] rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
@@ -259,14 +263,14 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
               <a
                 href="#faq"
                 onClick={(e) => handleSmoothScroll(e, '#faq')}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3.5 min-h-[48px] rounded-2xl text-sm font-semibold text-on-surface hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
                   <HelpCircle className="w-4 h-4" />
                 </div>
                 <span>Frequently Asked Questions</span>
               </a>
-            </div>
+            </nav>
 
             {/* Mobile Auth Actions */}
             <div className="pt-4 border-t border-outline-variant/20 flex flex-col gap-2.5">
@@ -274,7 +278,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
                 <Link
                   href="/chat"
                   onClick={closeMenu}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-semibold text-sm py-3.5 rounded-xl shadow-md"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-semibold text-sm py-3.5 min-h-[48px] rounded-xl shadow-md"
                 >
                   <span>Open Chat Dashboard</span>
                   <ArrowRight className="w-4 h-4" />
@@ -284,7 +288,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
                   <Link
                     href="/login"
                     onClick={closeMenu}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-semibold text-sm py-3.5 rounded-xl shadow-md"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-semibold text-sm py-3.5 min-h-[48px] rounded-xl shadow-md"
                   >
                     <span>Get Started Free</span>
                     <ArrowRight className="w-4 h-4" />
@@ -292,7 +296,7 @@ export function LandingHeader({ className = '' }: LandingHeaderProps) {
                   <Link
                     href="/login"
                     onClick={closeMenu}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-surface-container text-on-surface font-semibold text-sm py-3 rounded-xl border border-outline-variant/30"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-surface-container text-on-surface font-semibold text-sm py-3.5 min-h-[48px] rounded-xl border border-outline-variant/30"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Log In to Existing Account</span>
