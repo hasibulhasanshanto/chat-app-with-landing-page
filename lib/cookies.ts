@@ -28,5 +28,20 @@ export function setAuthToken(token: string): void {
 
 export function removeAuthToken(): void {
   if (typeof window === 'undefined') return;
+
+  // 1. js-cookie remove
   Cookies.remove(AUTH_COOKIE_NAME, { path: '/' });
+  Cookies.remove(AUTH_COOKIE_NAME, { path: '' });
+  Cookies.remove(AUTH_COOKIE_NAME);
+
+  // 2. Direct document.cookie expiration for guaranteed clearing across all environments
+  const pastDate = 'Thu, 01 Jan 1970 00:00:01 GMT';
+  document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Expires=${pastDate};`;
+  document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; SameSite=Lax; Expires=${pastDate};`;
+  document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; SameSite=Strict; Expires=${pastDate};`;
+
+  if (window.location.hostname) {
+    document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Domain=${window.location.hostname}; Expires=${pastDate};`;
+    document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Domain=.${window.location.hostname}; Expires=${pastDate};`;
+  }
 }

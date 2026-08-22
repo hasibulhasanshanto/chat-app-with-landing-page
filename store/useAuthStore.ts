@@ -42,6 +42,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     removeAuthToken();
     disconnectSocket();
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('chatflow_typing_sync');
+        localStorage.removeItem('chatflow_message_sync');
+        sessionStorage.clear();
+      } catch (e) {
+        // ignore
+      }
+    }
+
     set({
       user: null,
       token: null,
@@ -49,6 +60,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isLoading: false,
       isHydrated: true,
     });
+
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   },
 
   initializeAuth: async () => {

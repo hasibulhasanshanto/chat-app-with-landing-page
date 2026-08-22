@@ -80,6 +80,13 @@ export default function ChatPage() {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
 
+  // Redirect to login if user becomes unauthenticated
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isAuthLoading, isAuthenticated, router]);
+
   // Join active conversation room on socket if supported by backend
   useEffect(() => {
     if (socket && activeConversationId) {

@@ -18,7 +18,7 @@ const COUNTRY_CODES = [
 ];
 
 const DEMO_ACCOUNTS = [
-  { name: 'Rafi Ahmed', countryCode: '+880', phone: '1712345678' },
+  { name: 'Maruf Hossain', countryCode: '+880', phone: '1712345111' },
   { name: 'Sarah Ahmed', countryCode: '+1', phone: '5550192834' },
   { name: 'Ada Lovelace', countryCode: '+1', phone: '5551111111' },
 ];
@@ -208,9 +208,8 @@ export default function LoginPage() {
                             setSelectedCountry(c);
                             setIsCountryDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-surface-container-high transition-colors text-left ${
-                            selectedCountry.code === c.code ? 'bg-primary-fixed text-on-primary-container font-semibold' : 'text-on-surface'
-                          }`}
+                          className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-surface-container-high transition-colors text-left ${selectedCountry.code === c.code ? 'bg-primary-fixed text-on-primary-container font-semibold' : 'text-on-surface'
+                            }`}
                         >
                           <span className="truncate">{c.name}</span>
                           <span className="font-mono text-[11px] text-on-surface-variant ml-2">{c.code}</span>
