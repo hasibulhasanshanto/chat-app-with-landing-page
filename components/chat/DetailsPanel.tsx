@@ -76,7 +76,7 @@ export function DetailsPanel({
   };
 
   return (
-    <div className="w-80 md:w-88 h-full bg-surface-container-low border-l border-outline-variant/30 flex flex-col shrink-0 select-none overflow-y-auto z-20 animate-in slide-in-from-right-3 duration-200">
+    <div className="w-full lg:w-80 xl:w-88 h-full bg-surface-container-low border-l border-outline-variant/30 flex flex-col shrink-0 select-none overflow-y-auto z-20 animate-in slide-in-from-right-3 duration-200">
       {/* Top Header */}
       <div className="h-16 px-5 border-b border-outline-variant/30 flex items-center justify-between shrink-0 bg-surface-container-low sticky top-0 z-10">
         <span className="text-sm font-bold text-on-surface">Details</span>

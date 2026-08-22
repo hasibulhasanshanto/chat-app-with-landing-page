@@ -103,6 +103,7 @@ export default function ChatPage() {
   // Handlers
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConversationId(conv._id);
+    setMobileView('chat');
     // Clear unread count for the opened conversation
     queryClient.setQueryData<Conversation[]>(
       queryKeys.conversations.list(),
@@ -127,11 +128,13 @@ export default function ChatPage() {
 
       if (existing) {
         setActiveConversationId(existing._id);
+        setMobileView('chat');
         return;
       }
 
       const newConv = await createDirectMutation.mutateAsync({ userId });
       setActiveConversationId(newConv._id);
+      setMobileView('chat');
       success(`Started conversation with ${targetUser.name}`);
     } catch (err: any) {
       toastError(err?.message || 'Could not start conversation');
@@ -142,6 +145,7 @@ export default function ChatPage() {
     try {
       const newGroup = await createGroupMutation.mutateAsync({ name, participantIds });
       setActiveConversationId(newGroup._id);
+      setMobileView('chat');
       success(`Created channel "${newGroup.name}"`);
     } catch (err: any) {
       toastError(err?.message || 'Could not create group');
@@ -196,6 +200,7 @@ export default function ChatPage() {
         userId: user._id,
       });
       setActiveConversationId(null);
+      setMobileView('list');
       info('You left the group');
     } catch (err: any) {
       toastError(err?.message || 'Failed to leave group');
@@ -204,16 +209,18 @@ export default function ChatPage() {
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-surface text-on-surface font-sans">
-      {/* 1. Primary Left App Navigation Sidebar (Zustand controlled) */}
-      <AppNavSidebar
-        activeTab={activeNavTab}
-        setActiveTab={setActiveNavTab}
-        onOpenNewChat={openNewChat}
-        onOpenNewGroup={openNewGroup}
-      />
+      {/* 1. Primary Left App Navigation Sidebar (hidden on mobile and tablet when chatting) */}
+      <div className={`${mobileView === 'chat' ? 'hidden lg:flex' : 'flex'} h-full shrink-0`}>
+        <AppNavSidebar
+          activeTab={activeNavTab}
+          setActiveTab={setActiveNavTab}
+          onOpenNewChat={openNewChat}
+          onOpenNewGroup={openNewGroup}
+        />
+      </div>
 
       {/* 2. Secondary Sidebar: Conversation List (TanStack Query Cache) */}
-      <div className={`${mobileView === 'chat' ? 'hidden md:flex' : 'flex'} h-full shrink-0`}>
+      <div className={`${mobileView === 'chat' ? 'hidden lg:flex' : 'flex'} h-full shrink-0 flex-1 lg:flex-initial`}>
         <ConversationList
           conversations={conversations}
           activeConversationId={activeConversationId}
@@ -226,9 +233,9 @@ export default function ChatPage() {
       </div>
 
       {/* 3. Main Center Chat Area or Empty State */}
-      <main className={`flex-1 h-full flex overflow-hidden ${mobileView === 'list' ? 'hidden md:flex' : 'flex'}`}>
+      <main className={`flex-1 h-full flex overflow-hidden ${mobileView === 'list' ? 'hidden lg:flex' : 'flex'}`}>
         {activeConversation ? (
-          <div className="flex-1 h-full flex overflow-hidden">
+          <div className="flex-1 h-full flex overflow-hidden relative">
             <ChatArea
               conversation={activeConversation}
               messages={messages}
@@ -242,20 +249,45 @@ export default function ChatPage() {
               onBackToConversations={() => setMobileView('list')}
             />
 
-            {/* 4. Right Details Panel (collapsible via Zustand) */}
+            {/* 4. Right Details Panel (Desktop in-flow, Mobile/Tablet Slide-over drawer) */}
             {isDetailsOpen && (
-              <div className="hidden lg:block h-full">
-                <DetailsPanel
-                  conversation={activeConversation}
-                  currentUser={user}
-                  onClose={() => setDetailsOpen(false)}
-                  onOpenAddMembers={() => openManageGroup('add_members')}
-                  onOpenRenameGroup={() => openManageGroup('rename')}
-                  onRemoveMember={handleRemoveMember}
-                  onPromoteAdmin={handlePromoteAdmin}
-                  onLeaveGroup={handleLeaveGroup}
-                />
-              </div>
+              <>
+                {/* Desktop in-flow panel (>= lg) */}
+                <div className="hidden lg:block h-full shrink-0">
+                  <DetailsPanel
+                    conversation={activeConversation}
+                    currentUser={user}
+                    onClose={() => setDetailsOpen(false)}
+                    onOpenAddMembers={() => openManageGroup('add_members')}
+                    onOpenRenameGroup={() => openManageGroup('rename')}
+                    onRemoveMember={handleRemoveMember}
+                    onPromoteAdmin={handlePromoteAdmin}
+                    onLeaveGroup={handleLeaveGroup}
+                  />
+                </div>
+
+                {/* Mobile & Tablet Slide-Over Drawer (< lg) */}
+                <div className="lg:hidden fixed inset-0 z-50 flex justify-end">
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
+                    onClick={() => setDetailsOpen(false)}
+                  />
+                  {/* Drawer Content */}
+                  <div className="relative w-full max-w-sm sm:max-w-md h-full bg-surface-container-low z-10 shadow-2xl animate-in slide-in-from-right duration-200 flex flex-col">
+                    <DetailsPanel
+                      conversation={activeConversation}
+                      currentUser={user}
+                      onClose={() => setDetailsOpen(false)}
+                      onOpenAddMembers={() => openManageGroup('add_members')}
+                      onOpenRenameGroup={() => openManageGroup('rename')}
+                      onRemoveMember={handleRemoveMember}
+                      onPromoteAdmin={handlePromoteAdmin}
+                      onLeaveGroup={handleLeaveGroup}
+                    />
+                  </div>
+                </div>
+              </>
             )}
           </div>
         ) : (

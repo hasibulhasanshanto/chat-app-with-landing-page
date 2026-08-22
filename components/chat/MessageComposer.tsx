@@ -140,7 +140,7 @@ export function MessageComposer({
             onKeyDown={handleKeyDown}
             disabled={disabled}
             placeholder={placeholder}
-            className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface placeholder:text-on-surface-variant/50 px-2"
+            className="flex-1 min-w-0 bg-transparent border-none focus:outline-none text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/50 px-1 sm:px-2"
           />
 
           <button

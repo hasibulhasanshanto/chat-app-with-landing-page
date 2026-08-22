@@ -219,12 +219,12 @@ export function ChatArea({
       {/* Chat Header matching Stich design */}
       <header className="h-16 px-4 md:px-6 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-3 min-w-0">
-          {/* Mobile Back Button */}
+          {/* Mobile & Tablet Back Button */}
           {onBackToConversations && (
             <button
               type="button"
               onClick={onBackToConversations}
-              className="md:hidden p-1.5 -ml-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer"
+              className="lg:hidden p-1.5 -ml-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer"
               title="Back to inbox"
             >
               <ArrowLeft className="w-5 h-5" />
