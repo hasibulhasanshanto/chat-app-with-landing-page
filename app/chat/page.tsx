@@ -33,7 +33,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function ChatPage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
+  const { user, isAuthenticated, isLoading: isAuthLoading, isHydrated } = useAuthStore();
   const { success, error: toastError, info } = useToast();
 
   // Zustand UI State
@@ -80,12 +80,12 @@ export default function ChatPage() {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
 
-  // Redirect to login if user becomes unauthenticated
+  // Redirect to login if user becomes unauthenticated (only after auth hydration)
   useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
+    if (isHydrated && !isAuthLoading && !isAuthenticated) {
       router.replace('/login');
     }
-  }, [isAuthLoading, isAuthenticated, router]);
+  }, [isHydrated, isAuthLoading, isAuthenticated, router]);
 
   // Join active conversation room on socket if supported by backend
   useEffect(() => {

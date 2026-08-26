@@ -38,7 +38,11 @@ export default function LoginPage() {
   // If already authenticated, redirect to /chat
   useEffect(() => {
     if (isAuthenticated && !isAuthLoading) {
-      router.replace('/chat');
+      if (typeof window !== 'undefined') {
+        window.location.href = '/chat';
+      } else {
+        router.replace('/chat');
+      }
     }
   }, [isAuthenticated, isAuthLoading, router]);
 
@@ -76,14 +80,35 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const user = await login(fullPhoneNumber, name.trim());
-      success(`Welcome back, ${user.name}!`);
-      router.push('/chat');
+      const welcomeMsg = `Welcome back, ${user.name}!`;
+
+      // Save flash toast for display across page reload / navigation
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem(
+            'chatflow_flash_toast',
+            JSON.stringify({ message: welcomeMsg, type: 'success' })
+          );
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      success(welcomeMsg);
+
+      // Brief delay so user sees feedback smoothly before page redirect
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.location.href = '/chat';
+        } else {
+          router.replace('/chat');
+        }
+      }, 400);
     } catch (err: any) {
       console.error('Login error:', err);
       const message = err?.message || 'Login failed. Please try again.';
       setErrorMsg(message);
       toastError(message);
-    } finally {
       setIsSubmitting(false);
     }
   };

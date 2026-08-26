@@ -2,28 +2,40 @@ import Cookies from 'js-cookie';
 
 export const AUTH_COOKIE_NAME = 'chatflow_auth_token';
 
-/**
- * Cookie options:
- * - expires: 30 days
- * - sameSite: 'lax' for CSRF protection while permitting top-level navigation
- * - path: '/' for accessibility across all routes
- * - secure: enabled in production HTTPS
- */
-const COOKIE_OPTIONS: Cookies.CookieAttributes = {
-  expires: 30,
-  path: '/',
-  sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
-};
-
 export function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return Cookies.get(AUTH_COOKIE_NAME) || null;
+
+  // 1. Check js-cookie
+  const cookieVal = Cookies.get(AUTH_COOKIE_NAME);
+  if (cookieVal) return cookieVal;
+
+  // 2. Direct document.cookie fallback
+  if (typeof document !== 'undefined' && document.cookie) {
+    const match = document.cookie.match(new RegExp('(^|;\\s*)' + AUTH_COOKIE_NAME + '=([^;]*)'));
+    if (match && match[2]) {
+      return decodeURIComponent(match[2]);
+    }
+  }
+
+  return null;
 }
 
 export function setAuthToken(token: string): void {
   if (typeof window === 'undefined') return;
-  Cookies.set(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+
+  const isHttps = window.location.protocol === 'https:';
+
+  // 1. Set with js-cookie
+  Cookies.set(AUTH_COOKIE_NAME, token, {
+    expires: 30,
+    path: '/',
+    sameSite: 'lax',
+    secure: isHttps,
+  });
+
+  // 2. Direct document.cookie assignment for guaranteed instant availability
+  const maxAge = 30 * 24 * 60 * 60;
+  document.cookie = `${AUTH_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax${isHttps ? '; Secure' : ''}`;
 }
 
 export function removeAuthToken(): void {
@@ -45,3 +57,4 @@ export function removeAuthToken(): void {
     document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Domain=.${window.location.hostname}; Expires=${pastDate};`;
   }
 }
+

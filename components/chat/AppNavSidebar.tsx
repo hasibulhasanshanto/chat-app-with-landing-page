@@ -102,11 +102,21 @@ export function AppNavSidebar({
       </nav>
 
       {/* User Profile Bar at Bottom */}
-      <div className="p-3 md:p-4 border-t border-outline-variant/30 relative">
-        <div className="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-high/60 transition-colors">
+      <div className="p-2 md:p-4 border-t border-outline-variant/30 relative">
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          className={`w-full flex items-center justify-center md:justify-between p-2 rounded-xl transition-all cursor-pointer ${
+            isMenuOpen
+              ? 'bg-surface-container-high ring-2 ring-primary/20'
+              : 'hover:bg-surface-container-high/80 active:scale-95'
+          }`}
+          aria-label="User Profile and Options"
+          title={user?.name ? `${user.name} - Profile & Logout` : 'Profile & Logout'}
+        >
           <div className="flex items-center gap-3 min-w-0">
             <Avatar name={user?.name} isOnline={true} size="md" />
-            <div className="hidden md:flex flex-col min-w-0">
+            <div className="hidden md:flex flex-col min-w-0 text-left">
               <span className="text-sm font-bold text-on-surface truncate">{user?.name || 'User'}</span>
               <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
@@ -115,44 +125,43 @@ export function AppNavSidebar({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"
-            aria-label="User Options"
-          >
+          <div className="hidden md:flex p-1 text-on-surface-variant hover:text-on-surface">
             <MoreVertical className="w-4 h-4" />
-          </button>
-        </div>
+          </div>
+        </button>
 
         {/* User Options Popover */}
         {isMenuOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} />
-            <div className="absolute bottom-full left-3 md:left-4 mb-2 w-56 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl z-50 p-2 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-2 border-b border-outline-variant/20 mb-1">
-                <div className="text-xs font-bold text-on-surface truncate">{user?.name}</div>
-                <div className="text-[10px] text-on-surface-variant font-mono truncate">{user?.phone}</div>
+            <div className="absolute bottom-full left-2 md:left-4 mb-2 w-60 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-2xl z-50 p-2 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-2 border-b border-outline-variant/20 mb-1.5">
+                <div className="text-xs font-bold text-on-surface truncate">{user?.name || 'User'}</div>
+                <div className="text-[10px] text-on-surface-variant font-mono truncate">{user?.phone || ''}</div>
               </div>
 
               <button
                 type="button"
-                onClick={handleCopyId}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container-high rounded-xl transition-colors text-left"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopyId();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container-high rounded-xl transition-colors text-left cursor-pointer"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-on-surface-variant" />}
+                {copied ? <Check className="w-4 h-4 text-emerald-600 shrink-0" /> : <Copy className="w-4 h-4 text-on-surface-variant shrink-0" />}
                 <span>{copied ? 'Copied ID' : 'Copy User ID'}</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setIsMenuOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-error hover:bg-error-container/40 rounded-xl transition-colors text-left mt-1"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-semibold text-error hover:bg-error-container/40 rounded-xl transition-colors text-left mt-1 cursor-pointer"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 shrink-0" />
                 <span>Log Out</span>
               </button>
             </div>
